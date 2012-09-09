@@ -1,5 +1,7 @@
-Useful - A client / Node collection of useful utilities for 
+Useful
 ===========
+
+A collection of useful JS functions for both Node and front end
 
 ## Usage
 
