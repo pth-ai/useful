@@ -1,7 +1,5 @@
-StringUtils
+Useful - A client / Node collection of useful utilities for 
 ===========
-
-Javascript String manipulation utils
 
 ## Usage
 
@@ -9,22 +7,22 @@ Javascript String manipulation utils
 
 **Installation**
 
-		npm install stringutils
+		npm install useful
 
 **Using in code**
 
-		var su = require('stringutils');
+		var useful = require('useful');
 
 **FrontEnd (coming soon..)**
 
 ### Features
 
-**capitalize** su.capitalize(String)
+**capitalize** useful.capitalize(String)
 
 
 ```javascript
-su.capitalize("string utils")
-=> "String utils"
+su.capitalize("string cap")
+=> "String cap"
 ```
 
 

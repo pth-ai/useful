@@ -5,4 +5,16 @@
     return aString[0].toUpperCase() + aString.slice(1);
   };
 
+  exports.getCookieParam = function(cookieData, paramName) {
+    var inSet, set, _i, _len, _ref;
+    _ref = cookieData.split("; ");
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      set = _ref[_i];
+      inSet = set.split("=");
+      if (inSet[0] === paramName) {
+        return decodeURIComponent(inSet[1]);
+      }
+    }
+  };
+
 }).call(this);

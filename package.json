@@ -1,16 +1,18 @@
 {
-    "name" : "stringutils",
-    "version" : "0.0.1",
-    "description" : "A collection of string manipulation utils",
+    "name" : "useful",
+    "version" : "0.0.2",
+    "description" : "A collection of useful utils for server and client side",
     "main" : "./index.js",
     "keywords" : [
         "String",
         "Strings",
-	"String utils"
+	"String utils",
+	"utils",
+	"uilities"
     ],
     "repository" : {
         "type" : "git",
-        "url" : "https://github.com/romansky/StringUtils"
+        "url" : "https://github.com/romansky/Useful"
     },
     "dependencies" : {},
     "devDependencies" : {
