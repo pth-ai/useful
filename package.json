@@ -1,6 +1,6 @@
 {
     "name" : "useful",
-    "version" : "0.0.2",
+    "version" : "0.0.3",
     "description" : "A collection of useful utils for server and client side",
     "main" : "./index.js",
     "keywords" : [

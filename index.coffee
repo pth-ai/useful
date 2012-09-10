@@ -9,3 +9,20 @@ exports.getCookieParam = (cookieData, paramName)->
 		if inSet[0] == paramName
 			return decodeURIComponent(inSet[1])
 
+
+exports.merge = merge = (to, takeFrom, takeFrom2)->
+	if arguments.length > 2
+		cnt = 0
+		keys = Object.keys(arguments)
+		tmpMrg = merge(arguments[keys.shift()], arguments[keys.shift()])
+		merge(tmpMrg, arguments[key]) for key in keys
+		return tmpMrg
+	for p of takeFrom
+		try
+			if takeFrom[p].constructor == Object
+				to[p] = merge(to[p], takeFrom[p])
+			else
+				to[p] = takeFrom[p]
+		catch e
+			to[p] = takeFrom[p]
+	return to
