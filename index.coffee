@@ -26,3 +26,9 @@ exports.merge = merge = (to, takeFrom, takeFrom2)->
 		catch e
 			to[p] = takeFrom[p]
 	return to
+
+
+exports.makeObject = (prototype)->
+	func = ()->
+	func.prototype = prototype
+	return new func()

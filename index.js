@@ -44,4 +44,11 @@
     return to;
   };
 
+  exports.makeObject = function(prototype) {
+    var func;
+    func = function() {};
+    func.prototype = prototype;
+    return new func();
+  };
+
 }).call(this);

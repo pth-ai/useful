@@ -16,3 +16,10 @@ describe "Functional tests",->
 		merged = useful.merge {"a": "a", "b":"b", "deep": {"a":"a", "b":"b"}}, {"c":"c", "d":"d", "deep": {"c":"c", "d":"d"}}
 		expect(merged).toEqual( {"a": "a", "b":"b", "c":"c", "d":"d", "deep": {"a":"a", "b":"b", "c":"c", "d":"d"}} )
 		expect(merged.deep).toEqual({"a":"a", "b":"b", "c":"c", "d":"d"})
+
+	it "needs to create an object with set prototype",->
+		proto = {param: "value"}
+		prototyped = useful.makeObject(proto)
+		# object should remain clean
+		expect(JSON.stringify(prototyped)).toEqual("{}")
+		expect(prototyped.param).toEqual(proto.param)
