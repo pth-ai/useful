@@ -32,3 +32,7 @@ exports.makeObject = (prototype)->
 	func = ()->
 	func.prototype = prototype
 	return new func()
+
+# useful for spying on window location changes..
+exports.navigateTo = (location)->
+	window?.location.href = location

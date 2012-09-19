@@ -51,4 +51,8 @@
     return new func();
   };
 
+  exports.navigateTo = function(location) {
+    return typeof window !== "undefined" && window !== null ? window.location.href = location : void 0;
+  };
+
 }).call(this);
