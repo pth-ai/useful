@@ -18,12 +18,10 @@ exports.merge = merge = (to, takeFrom, takeFrom2)->
 		merge(tmpMrg, arguments[key]) for key in keys
 		return tmpMrg
 	for p of takeFrom
-		try
-			if takeFrom[p].constructor == Object
-				to[p] = merge(to[p], takeFrom[p])
-			else
-				to[p] = takeFrom[p]
-		catch e
+		if takeFrom[p]?.constructor == Object
+			tmpObj = to[p] || {}
+			to[p] = merge(tmpObj, takeFrom[p])
+		else
 			to[p] = takeFrom[p]
 	return to
 

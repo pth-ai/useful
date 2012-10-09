@@ -19,7 +19,7 @@
   };
 
   exports.merge = merge = function(to, takeFrom, takeFrom2) {
-    var cnt, key, keys, p, tmpMrg, _i, _len;
+    var cnt, key, keys, p, tmpMrg, tmpObj, _i, _len, _ref;
     if (arguments.length > 2) {
       cnt = 0;
       keys = Object.keys(arguments);
@@ -31,13 +31,10 @@
       return tmpMrg;
     }
     for (p in takeFrom) {
-      try {
-        if (takeFrom[p].constructor === Object) {
-          to[p] = merge(to[p], takeFrom[p]);
-        } else {
-          to[p] = takeFrom[p];
-        }
-      } catch (e) {
+      if (((_ref = takeFrom[p]) != null ? _ref.constructor : void 0) === Object) {
+        tmpObj = to[p] || {};
+        to[p] = merge(tmpObj, takeFrom[p]);
+      } else {
         to[p] = takeFrom[p];
       }
     }

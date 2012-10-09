@@ -17,6 +17,14 @@ describe "Functional tests",->
 		expect(merged).toEqual( {"a": "a", "b":"b", "c":"c", "d":"d", "deep": {"a":"a", "b":"b", "c":"c", "d":"d"}} )
 		expect(merged.deep).toEqual({"a":"a", "b":"b", "c":"c", "d":"d"})
 
+	it "copies an object in a way that doesnt point to the original object",->
+		origin = {a:{b:{c:"d"}}}
+		dest = {}
+		useful.merge(dest,origin)
+		dest.a.b.c = "_d"
+		expect(dest.a.b.c).toEqual("_d")
+		expect(origin.a.b.c).toEqual("d")
+
 	it "needs to create an object with set prototype",->
 		proto = {param: "value"}
 		prototyped = useful.makeObject(proto)
