@@ -1,30 +1,40 @@
 {
-    "name" : "useful",
-    "version" : "0.0.6",
-    "description" : "A collection of useful utils for server and client side",
-    "main" : "./index.js",
-    "keywords" : [
-        "String",
-        "Strings",
-	"String utils",
-	"utils",
-	"uilities"
-    ],
-    "repository" : {
-        "type" : "git",
-        "url" : "https://github.com/romansky/Useful"
-    },
-    "dependencies" : {},
-    "devDependencies" : {
-	"jasmine-node": ">= 1.0.26"
-    },
-    "scripts" : {},
-    "engine" : {"node" : ">=0.4.0"},
-    "author" : {
-        "name" : "Roman Landenband",
-        "email" : "roman.land@gmail.com",
-        "url" : "www.romansky.me"
-    }
+  "name": "useful",
+  "version": "0.5.0",
+  "description": "A collection of useful utils for server and client side written in TypeScript with zero dependencies",
+  "author": "Roman Landenband",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --outDir dist/",
+    "test": "NODE_ENV=test mocha --exit"
+  },
+  "keywords": [
+    "String",
+    "Strings",
+    "String utils",
+    "utils",
+    "uilities"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/romansky/Useful"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@sinonjs/fake-timers": "^10.3.0",
+    "@tsconfig/node18": "^18.2.0",
+    "@types/chai": "^4.3.5",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.15.13",
+    "@types/sinonjs__fake-timers": "^8.1.2",
+    "@types/spark-md5": "^3.0.2",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
 }
 
 
