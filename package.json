@@ -1,6 +1,6 @@
 {
   "name": "useful",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A collection of useful utils for server and client side written in TypeScript with zero dependencies",
   "author": "Roman Landenband",
   "license": "MIT",
@@ -36,5 +36,3 @@
     "typescript": "^5.1.6"
   }
 }
-
-
