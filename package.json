@@ -15,7 +15,8 @@
     "Strings",
     "String utils",
     "utils",
-    "uilities"
+    "uilities",
+    "TypeScript"
   ],
   "repository": {
     "type": "git",
@@ -23,16 +24,16 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@sinonjs/fake-timers": "^10.3.0",
-    "@tsconfig/node18": "^18.2.0",
-    "@types/chai": "^4.3.5",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^18.15.13",
-    "@types/sinonjs__fake-timers": "^8.1.2",
-    "@types/spark-md5": "^3.0.2",
-    "chai": "^4.3.7",
+    "@sinonjs/fake-timers": "^11.2.1",
+    "@tsconfig/node18": "^18.2.2",
+    "@types/chai": "^4.3.9",
+    "@types/mocha": "^10.0.3",
+    "@types/node": "^20.8.7",
+    "@types/sinonjs__fake-timers": "^8.1.4",
+    "@types/spark-md5": "^3.0.3",
+    "chai": "^4.3.10",
     "mocha": "^10.2.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2"
   }
 }
