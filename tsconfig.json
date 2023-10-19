@@ -3,7 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "target": "es6",
-    "module": "commonjs",
+    "module": "Node16",
     "noImplicitAny": true,
     "outDir": "dist",
     "rootDir": ".",
