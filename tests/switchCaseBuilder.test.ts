@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {SwitchCaseBuilder, createTypeGuard, TypeValues} from "../lib/switchCaseBuilder";  // Adjust the import path accordingly
+import {SwitchCaseBuilder, createTypeGuard} from "../lib";  // Adjust the import path accordingly
 
 describe('SwitchCaseBuilder', () => {
 
@@ -14,7 +14,7 @@ describe('SwitchCaseBuilder', () => {
     });
 
     // Advanced usage with custom type guards
-    it('should handle advanced type checks using custom type guards', async () => {
+    it('should handle advanced type checks using custom type guards from factory', async () => {
         type Shape = { kind: 'circle', radius: number } | { kind: 'rectangle', width: number, height: number };
 
         const isCircle = createTypeGuard<Shape>()('kind', 'circle');
@@ -22,7 +22,25 @@ describe('SwitchCaseBuilder', () => {
 
         const builder = new SwitchCaseBuilder<Shape>()
             .when(isCircle, shape => `Circle with radius ${shape.radius}`)
-            .when(isRectangle, shape => `Rectangle with dimensions ${shape.width}x${shape.height}`);
+            .when(isRectangle, shape => `Rectangle with dimensions ${shape.width}x${shape.height}`)
+            .checkExhaustive();
+
+        expect(builder.exec({kind: 'circle', radius: 5})).to.equal('Circle with radius 5');
+        expect(builder.exec({kind: 'rectangle', width: 4, height: 6})).to.equal('Rectangle with dimensions 4x6');
+    });
+
+    it('should handle using normal TypeScript type predicates', async () => {
+        type Circle = { kind: 'circle', radius: number }
+        type Rectangle = { kind: 'rectangle', width: number, height: number }
+        type Shape = Circle | Rectangle;
+
+        const isCircle = (shape: Shape): shape is Circle => shape.kind === 'circle';
+        const isRectangle = (shape: Shape): shape is Rectangle => shape.kind === 'rectangle';
+
+        const builder = new SwitchCaseBuilder<Shape>()
+            .when(isCircle, shape => `Circle with radius ${shape.radius}`)
+            .when(isRectangle, shape => `Rectangle with dimensions ${shape.width}x${shape.height}`)
+            .checkExhaustive();
 
         expect(builder.exec({kind: 'circle', radius: 5})).to.equal('Circle with radius 5');
         expect(builder.exec({kind: 'rectangle', width: 4, height: 6})).to.equal('Rectangle with dimensions 4x6');
@@ -48,5 +66,28 @@ describe('SwitchCaseBuilder', () => {
         expect(builder.exec({type: 'foo'})).to.equal('handled foo');
         expect(builder.exec({type: 'bar'})).to.equal('handled bar');
     });
+
+    it('should handle exact value matches', async () => {
+        type CaseOptions = 'case1' | 'case2' | 'case3';
+
+        const builder = new SwitchCaseBuilder<CaseOptions>()
+            .when('case1', () => 1)
+            .when('case2', () => 2)
+            .when('case3', () => 3)
+            .checkExhaustive();
+
+        expect(builder.exec('case1')).to.equal(1);
+        expect(builder.exec('case2')).to.equal(2);
+    });
+
+    it('should handle context correctly', async () => {
+        type Context = { prefix: string };
+
+        const builder = new SwitchCaseBuilder<{ type: 'foo' }, Context>()
+            .when('foo', (obj, ctx) => `${ctx.prefix} ${obj.type}`);
+
+        expect(builder.exec({type: 'foo'}, {prefix: 'Handled'})).to.equal('Handled foo');
+    });
+
 
 });

@@ -66,13 +66,42 @@ export class SwitchCaseBuilder<T, C = undefined, OUT = never, REMT = T, STATE = 
      * Add a case to the switch-like structure.
      * Supports multiple overloads for different types of checks.
      */
+    /**
+     * Define a case based on the 'type' field of an object. This overload will be triggered when
+     * the type argument is provided and matches the type field of the object.
+     *
+     * @param type - The specific type value to match against the object's 'type' field.
+     * @param callback - A function to execute if the object's type matches the provided type value.
+     * @returns An instance of the `SwitchCaseBuilder` with the new case added.
+     */
     public when<Type extends TypeValues<REMT>, OUT1>(type: Type, callback: (arg: Extract<REMT, {
         type: Type
     }>, context: Immutable<C>) => OUT1): SwitchCaseBuilder<T, C, OUT | OUT1, Exclude<REMT, {
         type: Type
     }>, Unvalidated>;
+    /**
+     * Define a case using a custom createTypeGuard factory
+     *
+     * @param typeGuard - A custom type guard function to determine if the object matches a specific type.
+     * @param callback - A function to execute if the object matches the type as determined by the typeGuard.
+     * @returns An instance of the `SwitchCaseBuilder` with the new case added.
+     */
     public when<K extends keyof REMT, V extends REMT[K] & string, OUT1, TGV extends REMT & Record<K, V>>(typeGuard: ((obj: REMT) => obj is TGV), callback: (arg: TGV, context: Immutable<C>) => OUT1): SwitchCaseBuilder<T, C, OUT | OUT1, Exclude<REMT, TGV>, Unvalidated>;
+    /**
+     * Define a case using a normal TypeScript type guard
+     *
+     * @param predicate - A predicate function to determine if the object matches a certain condition.
+     * @param callback - A function to execute if the object satisfies the condition set by the predicate.
+     * @returns An instance of the `SwitchCaseBuilder` with the new case added.
+     */
     public when<S extends REMT, OUT1>(predicate: Predicate<S>, callback: (arg: Extract<REMT, S>, context: Immutable<C>) => OUT1): SwitchCaseBuilder<T, C, OUT | OUT1, Exclude<REMT, S>, Unvalidated>;
+    /**
+     * Define a case based on an exact value match.
+     *
+     * @param value - The exact value to match against the object.
+     * @param callback - A function to execute if the object matches the provided value.
+     * @returns An instance of the `SwitchCaseBuilder` with the new case added.
+     */
     public when<Value extends REMT, OUT1>(value: Value, callback: (arg: Value, context: Immutable<C>) => OUT1): SwitchCaseBuilder<T, C, OUT | OUT1, Exclude<REMT, Value>, Unvalidated>;
     public when<OUT1>(typeOrPredicate: string | Predicate<REMT> | ((obj: REMT) => obj is REMT & Record<any, any>), callback: (arg: any, context: any) => any): SwitchCaseBuilder<T, C, OUT | OUT1, Exclude<REMT, any>, Unvalidated> {
         if (typeof typeOrPredicate === "string") {
