@@ -1,11 +1,11 @@
 import {expect} from "chai";
-import {SwitchCaseBuilder, createTypeGuard, hasOwnPropertyPredicate, hasOwnPropertyValuePredicate} from "../lib";  // Adjust the import path accordingly
+import {createTypeGuard, hasOwnPropertyPredicate, hasOwnPropertyValuePredicate, Switcher} from "../lib"; // Adjust the import path accordingly
 
-describe('SwitchCaseBuilder', () => {
+describe('Switcher', () => {
 
     // Basic usage
     it('should handle basic type checks using strings', async () => {
-        const builder = new SwitchCaseBuilder<{ type: string }>()
+        const builder = new Switcher<{ type: string }>()
             .when('foo', () => 'handled foo')
             .when('bar', () => 'handled bar');
 
@@ -20,7 +20,7 @@ describe('SwitchCaseBuilder', () => {
         const isCircle = createTypeGuard<Shape>()('kind', 'circle');
         const isRectangle = createTypeGuard<Shape>()('kind', 'rectangle');
 
-        const builder = new SwitchCaseBuilder<Shape>()
+        const builder = new Switcher<Shape>()
             .when(isCircle, shape => `Circle with radius ${shape.radius}`)
             .when(isRectangle, shape => `Rectangle with dimensions ${shape.width}x${shape.height}`)
             .checkExhaustive();
@@ -37,7 +37,7 @@ describe('SwitchCaseBuilder', () => {
         const isCircle = (shape: Shape): shape is Circle => shape.kind === 'circle';
         const isRectangle = (shape: Shape): shape is Rectangle => shape.kind === 'rectangle';
 
-        const builder = new SwitchCaseBuilder<Shape>()
+        const builder = new Switcher<Shape>()
             .when(isCircle, shape => `Circle with radius ${shape.radius}`)
             .when(isRectangle, shape => `Rectangle with dimensions ${shape.width}x${shape.height}`)
             .checkExhaustive();
@@ -48,7 +48,7 @@ describe('SwitchCaseBuilder', () => {
 
     // Edge cases
     it('should throw an error for unhandled cases', async () => {
-        const builder = new SwitchCaseBuilder<{ type: string }>()
+        const builder = new Switcher<{ type: string }>()
             .when('foo', () => 'handled foo');
 
         expect(builder.exec.bind(builder, {type: 'foo'})).to.not.throw();
@@ -58,7 +58,7 @@ describe('SwitchCaseBuilder', () => {
     it('should allow for exhaustive checks', async () => {
 
         type Testing = { type: 'foo' } | { type: 'bar' };
-        const builder = new SwitchCaseBuilder<Testing>()
+        const builder = new Switcher<Testing>()
             .when('foo', () => 'handled foo')
             .when('bar', () => 'handled bar')
             .checkExhaustive();
@@ -70,7 +70,7 @@ describe('SwitchCaseBuilder', () => {
     it('should handle exact value matches', async () => {
         type CaseOptions = 'case1' | 'case2' | 'case3';
 
-        const builder = new SwitchCaseBuilder<CaseOptions>()
+        const builder = new Switcher<CaseOptions>()
             .when('case1', () => 1)
             .when('case2', () => 2)
             .when('case3', () => 3)
@@ -83,7 +83,7 @@ describe('SwitchCaseBuilder', () => {
     it('should handle context correctly', async () => {
         type Context = { prefix: string };
 
-        const builder = new SwitchCaseBuilder<{ type: 'foo' }, Context>()
+        const builder = new Switcher<{ type: 'foo' }, Context>()
             .when('foo', (obj, ctx) => `${ctx.prefix} ${obj.type}`);
 
         expect(builder.exec({type: 'foo'}, {prefix: 'Handled'})).to.equal('Handled foo');
@@ -98,8 +98,8 @@ describe('SwitchCaseBuilder', () => {
         const hasAge = hasOwnPropertyPredicate('age');
         const hasUsername = hasOwnPropertyPredicate('username');
 
-        // Use the SwitchCaseBuilder with the property predicates
-        const builder = new SwitchCaseBuilder<User>()
+        // Use the Switcher with the property predicates
+        const builder = new Switcher<User>()
             .when(hasAge, user => `User with age ${user.age}`)
             .when(hasUsername, user => `User with username ${user.username}`)
             .checkExhaustive();
@@ -120,8 +120,8 @@ describe('SwitchCaseBuilder', () => {
         const hasAThing = hasOwnPropertyValuePredicate('athing', 'second');
         const hasAThingy = hasOwnPropertyValuePredicate('athingy', 'third');
 
-        // Use the SwitchCaseBuilder with the property predicates
-        const builder = new SwitchCaseBuilder<User>()
+        // Use the Switcher with the property predicates
+        const builder = new Switcher<User>()
             .when(hasAType, user => `User with age ${user.age}`)
             .when(hasAThing, user => `User with username ${user.username}`)
             .when(hasAThingy, user => `User with password ${user.password}`)
@@ -144,8 +144,8 @@ describe('SwitchCaseBuilder', () => {
         const hasAThing = hasOwnPropertyValuePredicate('atype', 'second' as const);
         const hasAThingy = hasOwnPropertyValuePredicate('athingy', 'third' as const);
 
-        // Use the SwitchCaseBuilder with the property predicates
-        const builder = new SwitchCaseBuilder<User>()
+        // Use the Switcher with the property predicates
+        const builder = new Switcher<User>()
             .when(hasAType, user => `User with age ${user.age}`)
             .when(hasAThing, user => `User with username ${user.username}`)
             .when(hasAThingy, user => `User with password ${user.password}`)
@@ -155,6 +155,30 @@ describe('SwitchCaseBuilder', () => {
         expect(builder.exec({ atype: 'first', age: 25, name: 'John' })).to.equal('User with age 25');
         expect(builder.exec({ atype: 'second', username: 'john_doe', email: 'john@example.com' })).to.equal('User with username john_doe');
         expect(builder.exec({ athingy: 'third', password: "1234", })).to.equal('User with password 1234');
+    });
+
+    it('should support the visitor patern using the `create` static method', async () => {
+
+        type User =
+            { atype: 'first', age: number, name: string }
+            | { atype: 'second', username: string, email: string }
+            | { athingy: 'third', password: string };
+
+        // Create property predicates
+        const hasAType = hasOwnPropertyValuePredicate('atype', 'first' as const);
+        const hasAThing = hasOwnPropertyValuePredicate('atype', 'second' as const);
+        const hasAThingy = hasOwnPropertyValuePredicate('athingy', 'third' as const);
+
+        const result = Switcher.create({ atype: 'first', age: 25, name: 'John' } as User, switcher =>
+            switcher
+                .when(hasAType, user => `User with age ${user.age}`)
+                .when(hasAThing, user => `User with age ${user.username}`)
+                .when(hasAThingy, user => `User with password ${user.password}`)
+                .checkExhaustive() // !! use this to make sure it's exhaustive
+        )
+
+        // Execute tests
+        expect(result).to.equal('User with age 25');
     });
 
 

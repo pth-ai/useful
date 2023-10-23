@@ -1,2 +1,2 @@
 export * from "./immutableUtils";
-export * from "./switchCaseBuilder";
+export * from "./switcher";
