@@ -8,10 +8,18 @@ type TypeObject = { type: string } | string;
 export type TypeValues<T> = T extends { type: infer U } ? U : never;
 
 export function hasOwnPropertyPredicate<Y extends PropertyKey>(prop: Y) {
-    return function<X extends object>(obj: X): obj is X & Record<Y, unknown> {
+    return function<X extends object>(obj: X): obj is Extract<X, Record<Y, unknown>> {
         return obj.hasOwnProperty(prop);
     }
 }
+
+export function hasOwnPropertyValuePredicate<Y extends PropertyKey, Z extends any>(prop: Y, value: Z) {
+    return function<X extends object>(obj: X): obj is Extract<X, Record<Y, Z>> {
+        return hasOwnPropertyPredicate(prop)(obj) && obj[prop] === value;
+    }
+}
+
+
 
 // Utility type to extract the 'type' field values from a type
 export type SelectTypeValues<T, U extends string> = T extends { type: U } ? T : never;
@@ -91,7 +99,7 @@ export class SwitchCaseBuilder<T, C = undefined, OUT = never, REMT = T, STATE = 
      * @param callback - A function to execute if the object matches the type as determined by the typeGuard.
      * @returns An instance of the `SwitchCaseBuilder` with the new case added.
      */
-    public when<K extends keyof REMT, V extends REMT[K] & string, OUT1, TGV extends REMT & Record<K, V>>(typeGuard: ((obj: REMT) => obj is TGV), callback: (arg: TGV, context: Immutable<C>) => OUT1): SwitchCaseBuilder<T, C, OUT | OUT1, Exclude<REMT, TGV>, Unvalidated>;
+    public when<K extends PropertyKey, V extends any, OUT1, TGV extends Extract<REMT, Record<K, V>>>(typeGuard: ((obj: REMT) => obj is TGV), callback: (arg: TGV, context: Immutable<C>) => OUT1): SwitchCaseBuilder<T, C, OUT | OUT1, Exclude<REMT, TGV>, Unvalidated>;
     /**
      * Define a case using a normal TypeScript type guard
      *
@@ -108,7 +116,7 @@ export class SwitchCaseBuilder<T, C = undefined, OUT = never, REMT = T, STATE = 
      * @returns An instance of the `SwitchCaseBuilder` with the new case added.
      */
     public when<Value extends REMT, OUT1>(value: Value, callback: (arg: Value, context: Immutable<C>) => OUT1): SwitchCaseBuilder<T, C, OUT | OUT1, Exclude<REMT, Value>, Unvalidated>;
-    public when<OUT1>(typeOrPredicate: string | Predicate<REMT> | ((obj: REMT) => obj is REMT & Record<any, any>), callback: (arg: any, context: any) => any): SwitchCaseBuilder<T, C, OUT | OUT1, Exclude<REMT, any>, Unvalidated> {
+    public when<OUT1>(typeOrPredicate: string | Predicate<REMT> | ((obj: REMT) => obj is Extract<REMT, Record<any, any>>), callback: (arg: any, context: any) => any): SwitchCaseBuilder<T, C, OUT | OUT1, Exclude<REMT, any>, Unvalidated> {
         if (typeof typeOrPredicate === "string") {
             const predicate = (arg: TypeObject) => {
                 if (typeof arg === 'string') return arg === typeOrPredicate;

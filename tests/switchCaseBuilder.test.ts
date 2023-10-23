@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {SwitchCaseBuilder, createTypeGuard, hasOwnPropertyPredicate} from "../lib";  // Adjust the import path accordingly
+import {SwitchCaseBuilder, createTypeGuard, hasOwnPropertyPredicate, hasOwnPropertyValuePredicate} from "../lib";  // Adjust the import path accordingly
 
 describe('SwitchCaseBuilder', () => {
 
@@ -107,6 +107,30 @@ describe('SwitchCaseBuilder', () => {
         // Execute tests
         expect(builder.exec({ age: 25, name: 'John' })).to.equal('User with age 25');
         expect(builder.exec({ username: 'john_doe', email: 'john@example.com' })).to.equal('User with username john_doe');
+    });
+
+    it('should handle objects with properties created using the property value predicate factory', async () => {
+        type User =
+            { atype: 'first', age: number, name: string }
+            | { athing: 'second', username: string, email: string }
+            | { athingy: 'third', password: string };
+
+        // Create property predicates
+        const hasAType = hasOwnPropertyValuePredicate('atype', 'first');
+        const hasAThing = hasOwnPropertyValuePredicate('athing', 'second');
+        const hasAThingy = hasOwnPropertyValuePredicate('athingy', 'third');
+
+        // Use the SwitchCaseBuilder with the property predicates
+        const builder = new SwitchCaseBuilder<User>()
+            .when(hasAType, user => `User with age ${user.age}`)
+            .when(hasAThing, user => `User with username ${user.username}`)
+            .when(hasAThingy, user => `User with password ${user.password}`)
+            .checkExhaustive();
+
+        // Execute tests
+        expect(builder.exec({ atype: 'first', age: 25, name: 'John' })).to.equal('User with age 25');
+        expect(builder.exec({ athing: 'second', username: 'john_doe', email: 'john@example.com' })).to.equal('User with username john_doe');
+        expect(builder.exec({ athingy: 'third', password: "1234", })).to.equal('User with password 1234');
     });
 
 
