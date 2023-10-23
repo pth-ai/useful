@@ -129,7 +129,9 @@ For detailed information and more utilities, check the `/docs/immutableUtils.md`
 
 Detailed documentation for each utility can be found in the `/docs` directory. Some key highlights:
 
-- **SwitchCaseBuilder**: An exhaustive type checker and pattern matcher. Ideal for disjoint union types. [Read more](/docs/SwitchCaseBuilder.md).
+- **SwitchCaseBuilder**: An exhaustive type checker and pattern matcher. Ideal for disjoint union types. [Read more](/docs/switchCaseBuilder.md).
+- **immutableUtils**: The `immutableUtils` module provides a robust set of utilities to handle both immutable and mutable data structures in TypeScript, making it easier to perform operations while maintaining data integrity.
+  [Read more](/docs/immutableUtils.md).
 
 (Continue with other utilities as they get added.)
 
