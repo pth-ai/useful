@@ -29,10 +29,10 @@ yarn add useful
 
 ## 🚀 Utilities
 
-- [SwitchCaseBuilder](#-switchcasebuilder---pattern-matching-and-exhaustive-type-checking-made-easy)
+- [Switcher](#-Switcher---pattern-matching-and-exhaustive-type-checking-made-easy)
 - [immutableUtils](#-immutableutils---tools-for-immutable-and-mutable-operations)
 
-## 🛠️ `SwitchCaseBuilder` - Pattern matching and exhaustive type checking made easy
+## 🛠️ `Switcher` - Pattern matching and exhaustive type checking made easy
 
 ### 📌 Features:
 
@@ -51,12 +51,12 @@ yarn add useful
 
 #### Basic Type Matching with Exhaustive Checks
 
-For simple disjoint union types, the `SwitchCaseBuilder` utility offers a straightforward way to handle different variants based on the `type` property. The `.checkExhaustive()` method ensures that every possible type in the union is addressed, offering compile-time safety against unhandled cases.
+For simple disjoint union types, the `Switcher` utility offers a straightforward way to handle different variants based on the `type` property. The `.checkExhaustive()` method ensures that every possible type in the union is addressed, offering compile-time safety against unhandled cases.
 
 ```typescript
-import {SwitchCaseBuilder} from 'useful';
+import {Switcher} from 'useful';
 
-const builder = new SwitchCaseBuilder<{ type: 'foo', fooValue: number } | { type: 'bar', barValue: number }>()
+const builder = new Switcher<{ type: 'foo', fooValue: number } | { type: 'bar', barValue: number }>()
     .when('foo', _ => 'handled foo ' + _.fooValue)
     .when('bar', _ => 'handled bar ' + _.barValue)
     .checkExhaustive(); // will fail to compile if not all options are handled 
@@ -67,7 +67,7 @@ console.log(builder.exec({type: 'bar', barValue: 123}));  // Outputs: "handled b
 
 In this example, we define two distinct types within our union, `'foo'` and `'bar'`. The utility provides a clean and type-safe way to handle each variant, ensuring at compile-time that all types are covered.
 
-🚫 Note: `SwitchCaseBuilder` is optimized for disjoint union types like `{ type: 'foo' } | { type: 'bar' }`. Single object types with union properties, e.g., `{ type: 'foo' | 'bar' }`, are not supported. 
+🚫 Note: `Switcher` is optimized for disjoint union types like `{ type: 'foo' } | { type: 'bar' }`. Single object types with union properties, e.g., `{ type: 'foo' | 'bar' }`, are not supported. 
 
 ## 🛠️ `immutableUtils` - Tools for Immutable and Mutable Operations
 
@@ -129,7 +129,7 @@ For detailed information and more utilities, check the `/docs/immutableUtils.md`
 
 Detailed documentation for each utility can be found in the `/docs` directory. Some key highlights:
 
-- **SwitchCaseBuilder**: An exhaustive type checker and pattern matcher. Ideal for disjoint union types. [Read more](/docs/switchCaseBuilder.md).
+- **Switcher**: An exhaustive type checker and pattern matcher. Ideal for disjoint union types. [Read more](/docs/Switcher.md).
 - **immutableUtils**: The `immutableUtils` module provides a robust set of utilities to handle both immutable and mutable data structures in TypeScript, making it easier to perform operations while maintaining data integrity.
   [Read more](/docs/immutableUtils.md).
 
