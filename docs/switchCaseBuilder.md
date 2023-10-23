@@ -4,7 +4,38 @@ The `SwitchCaseBuilder` is a utility designed to facilitate type-safe pattern ma
 
 ### Overview
 
-Pattern matching is a common paradigm in functional programming languages. While TypeScript doesn't have native pattern matching, the `SwitchCaseBuilder` utility offers a way to achieve similar functionality, ensuring type safety and exhaustive checks.
+Pattern matching is a common paradigm in functional programming languages. While TypeScript doesn't natively support pattern matching in the same way some functional languages do, the `SwitchCaseBuilder` utility bridges this gap. It not only replicates the core functionalities of pattern matching but also adds syntactic sugar to enhance and simplify some common use cases. This allows developers to achieve similar functionality with a touch of elegance, all while ensuring type safety and exhaustive checks.
+
+By leveraging `SwitchCaseBuilder`, developers can seamlessly integrate pattern matching into their TypeScript projects, benefiting from both the functional paradigm and the enhanced features the utility provides.
+
+### Why SwitchCaseBuilder?
+
+When working with TypeScript, developers often yearn for a more functional approach to handling different cases in their code. The `SwitchCaseBuilder` was born out of this necessity, bridging the gap between type safety, functional programming, and pattern matching.
+
+#### Functional Value of Inline Case Matching
+
+Inline case matching is a staple in many functional programming languages, allowing developers to elegantly handle different variants of a type. This pattern not only makes the code more readable but also ensures that the logic for each case is neatly encapsulated, leading to cleaner and more maintainable code.
+
+#### The Limitations of `if/else` and `switch`
+
+Traditional control structures like `if/else` and `switch` come with their own sets of challenges:
+
+- **Compile-Time Checks**: Neither `if/else` nor `switch` offers compile-time checks for covering all possible cases. This can lead to potential runtime errors if a case is missed or overlooked.
+
+- **Functional Closures with Return Compartments**: The `if/else` structure, while versatile, does not naturally encapsulate each branch into a functional closure that returns a value. This can lead to scattered return statements and a lack of clarity on what each branch is producing.
+
+- **Switch's Closure Limitations**: The `switch` statement, on the other hand, groups cases together but doesn't inherently create a returning closure. This means you might end up with multiple `break` statements and scattered returns, making the code harder to follow.
+
+#### Enter SwitchCaseBuilder
+
+The `SwitchCaseBuilder` utility addresses these challenges by:
+
+- **Ensuring Compile-Time Safety**: With the `.checkExhaustive()` method, the utility ensures that every possible case is addressed, providing a compile-time guarantee against unhandled cases.
+
+- **Functional Encapsulation**: Each case in the `SwitchCaseBuilder` is a functional closure that returns a value, ensuring a clear flow and making it evident what each branch produces.
+
+In essence, `SwitchCaseBuilder` combines the best of both worlds, offering the structure of traditional control statements with the type safety and functional benefits of modern TypeScript.
+
 
 ### Basic Usage
 
