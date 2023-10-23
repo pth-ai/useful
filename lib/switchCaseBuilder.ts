@@ -7,6 +7,11 @@ type TypeObject = { type: string } | string;
 // Utility type to extract the 'type' field values from a type
 export type TypeValues<T> = T extends { type: infer U } ? U : never;
 
+export function hasOwnPropertyPredicate<Y extends PropertyKey>(prop: Y) {
+    return function<X extends object>(obj: X): obj is X & Record<Y, unknown> {
+        return obj.hasOwnProperty(prop);
+    }
+}
 
 // Utility type to extract the 'type' field values from a type
 export type SelectTypeValues<T, U extends string> = T extends { type: U } ? T : never;
