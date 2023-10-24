@@ -1,6 +1,133 @@
 ## Switcher
 
-The `Switcher` is a utility designed to facilitate type-safe pattern matching in TypeScript. It offers an idiomatic and structured way to handle different types in a disjoint union, providing exhaustive type checks and ensuring that all possible cases are handled.
+## Introduction
+The `Switcher` class is a utility that provides a way to handle multiple type checks and branches in a type-safe manner. It's inspired by the traditional switch-case mechanism but adds type-safety, exhaustiveness checking, and other powerful features.
+
+## Examples
+
+### Usage with Custom Type Guards
+To handle more complex type checks using custom type guards:
+
+```typescript
+type Shape = { kind: 'circle', radius: number } | { kind: 'rectangle', width: number, height: number };
+
+const isCircle = createTypeGuard<Shape>()('kind', 'circle');
+const isRectangle = createTypeGuard<Shape>()('kind', 'rectangle');
+
+const builder = new Switcher<Shape>()
+    .when(isCircle, shape => `Circle with radius ${shape.radius}`)
+    .when(isRectangle, shape => `Rectangle with dimensions ${shape.width}x${shape.height}`)
+    .checkExhaustive();
+
+console.log(builder.exec({kind: 'circle', radius: 5})); // Outputs: 'Circle with radius 5'
+console.log(builder.exec({kind: 'rectangle', width: 4, height: 6})); // Outputs: 'Rectangle with dimensions 4x6'
+```
+
+### Using TypeScript Type Predicates
+You can also use standard TypeScript type predicates:
+
+```typescript
+type Circle = { kind: 'circle', radius: number }
+type Rectangle = { kind: 'rectangle', width: number, height: number }
+type Shape = Circle | Rectangle;
+
+const isCircle = (shape: Shape): shape is Circle => shape.kind === 'circle';
+const isRectangle = (shape: Shape): shape is Rectangle => shape.kind === 'rectangle';
+
+const builder = new Switcher<Shape>()
+    .when(isCircle, shape => `Circle with radius ${shape.radius}`)
+    .when(isRectangle, shape => `Rectangle with dimensions ${shape.width}x${shape.height}`)
+    .checkExhaustive();
+
+console.log(builder.exec({kind: 'circle', radius: 5})); // Outputs: 'Circle with radius 5'
+console.log(builder.exec({kind: 'rectangle', width: 4, height: 6})); // Outputs: 'Rectangle with dimensions 4x6'
+```
+
+### Exhaustiveness Checks
+The Switcher also provides a way to ensure all possible cases have been handled:
+
+```typescript
+type Testing = { type: 'foo' } | { type: 'bar' };
+const builder = new Switcher<Testing>()
+    .when('foo', () => 'handled foo')
+    .when('bar', () => 'handled bar')
+    .checkExhaustive();
+
+console.log(builder.exec({type: 'foo'})); // Outputs: 'handled foo'
+console.log(builder.exec({type: 'bar'})); // Outputs: 'handled bar'
+```
+
+### Handling Exact Value Matches
+Switcher allows you to handle cases based on exact value matches:
+
+```typescript
+type CaseOptions = 'case1' | 'case2' | 'case3';
+
+const builder = new Switcher<CaseOptions>()
+    .when('case1', () => 1)
+    .when('case2', () => 2)
+    .when('case3', () => 3)
+    .checkExhaustive();
+
+console.log(builder.exec('case1')); // Outputs: 1
+console.log(builder.exec('case2')); // Outputs: 2
+```
+
+### Handling Context
+Switcher can also handle additional context:
+
+```typescript
+type Context = { prefix: string };
+
+const builder = new Switcher<{ type: 'foo' }, Context>()
+    .when('foo', (obj, ctx) => `${ctx.prefix} ${obj.type}`);
+
+console.log(builder.exec({type: 'foo'}, {prefix: 'Handled'})); // Outputs: 'Handled foo'
+```
+
+### Using Property Predicate Factory
+Switcher can handle objects with properties created using property predicate factories:
+
+```typescript
+type User =
+    { age: number, name: string }
+    | { username: string, email: string };
+
+const hasAge = hasOwnPropertyPredicate('age');
+const hasUsername = hasOwnPropertyPredicate('username');
+
+const builder = new Switcher<User>()
+    .when(hasAge, user => `User with age ${user.age}`)
+    .when(hasUsername, user => `User with username ${user.username}`)
+    .checkExhaustive();
+
+console.log(builder.exec({ age: 25, name: 'John' })); // Outputs: 'User with age 25'
+console.log(builder.exec({ username: 'john_doe', email: 'john@example.com' })); // Outputs: 'User with username john_doe'
+```
+
+### Using the `create` Static Method (Visitor Pattern)
+For a more declarative style, you can use the `create` static method, which allows you to define your type checks and handlers in a more visitor-like pattern:
+
+```typescript
+type User =
+    { atype: 'first', age: number, name: string }
+    | { atype: 'second', username: string, email: string }
+    | { athingy: 'third', password: string };
+
+const hasAType = hasOwnPropertyValuePredicate('atype', 'first' as const);
+const hasAThing = hasOwnPropertyValuePredicate('atype', 'second' as const);
+const hasAThingy = hasOwnPropertyValuePredicate('athingy', 'third' as const);
+
+const result = Switcher.create({ atype: 'first', age: 25, name: 'John' } as User, switcher =>
+    switcher
+        .when(hasAType, user => `User with age ${user.age}`)
+        .when(hasAThing, user => `User with age ${user.username}`)
+        .when(hasAThingy, user => `User with password ${user.password}`)
+        .checkExhaustive()
+)
+
+console.log(result); // Outputs: 'User with age 25'
+```
 
 ### Overview
 
@@ -36,71 +163,5 @@ The `Switcher` utility addresses these challenges by:
 
 In essence, `Switcher` combines the best of both worlds, offering the structure of traditional control statements with the type safety and functional benefits of modern TypeScript.
 
-
-### Basic Usage
-
-#### Handling Basic Type Checks
-
-For disjoint union types where you want to handle based on the `type` property:
-
-```typescript
-import {Switcher} from 'useful';
-
-const builder = new Switcher<{ type: string }>()
-    .when('foo', () => 'handled foo')
-    .when('bar', () => 'handled bar');
-
-console.log(builder.exec({type: 'foo'}));  // Outputs: "handled foo"
-```
-
-### Advanced Usage
-
-#### Using Custom Type Guards
-
-For more complex scenarios, you can use custom type guards:
-
-```typescript
-import {Switcher, createTypeGuard} from 'useful';
-
-type Shape = { kind: 'circle', radius: number } | { kind: 'rectangle', width: number, height: number };
-
-const isCircle = createTypeGuard<Shape>()('kind', 'circle');
-const isRectangle = createTypeGuard<Shape>()('kind', 'rectangle');
-
-const builder = new Switcher<Shape>()
-    .when(isCircle, shape => `Circle with radius ${shape.radius}`)
-    .when(isRectangle, shape => `Rectangle with dimensions ${shape.width}x${shape.height}`);
-
-console.log(builder.exec({kind: 'circle', radius: 5}));  // Outputs: "Circle with radius 5"
-```
-
-### Edge Cases
-
-The `Switcher` utility throws an error for unhandled cases:
-
-```typescript
-const builder = new Switcher<{ type: string }>()
-    .when('foo', () => 'handled foo');
-
-// This will throw an error: "No matching case"
-builder.exec({type: 'bar'});
-```
-
-#### Ensuring Exhaustive Checks
-
-To ensure that all possible cases in a disjoint union are handled:
-
-```typescript
-const builder = new Switcher<{ type: 'foo' } | { type: 'bar' }>()
-    .when('foo', () => 'handled foo')
-    .when('bar', () => 'handled bar')
-    .checkExhaustive();
-
-console.log(builder.exec({type: 'foo'}));  // Outputs: "handled foo"
-```
-
 🚫 **Note**: `Switcher` is optimized for disjoint union types. Single object types with union properties, e.g., `{ type: 'foo' | 'bar' }`, are not supported.
 
-### Conclusion
-
-The `Switcher` utility offers a structured and type-safe way to handle pattern matching in TypeScript. It provides a clear and idiomatic approach to handle different types in disjoint unions, ensuring exhaustive type checks and making your TypeScript code more robust.
