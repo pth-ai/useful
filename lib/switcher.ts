@@ -1,7 +1,7 @@
 import {Immutable} from "./immutableUtils";
+import {TypePredicate} from "./utils";
 
 // Type definition for a predicate function
-type Predicate<T> = (arg: any) => arg is T;
 type TypeObject = { type: string } | string;
 
 // Utility type to extract the 'type' field values from a type
@@ -77,7 +77,7 @@ export class Switcher<T, C = undefined, OUT = never, REMT = T, STATE = Unvalidat
 
     // Array to hold the cases for the switch-like structure
     private cases: Array<
-        { type: 'type-predicate', predicate: Predicate<any> | Guard<any, any>, callback: (arg: T, context: C) => OUT }
+        { type: 'type-predicate', predicate: TypePredicate<any> | Guard<any, any>, callback: (arg: T, context: C) => OUT }
         | {
         type: 'func-predicate',
         predicate: (arg: TypeObject) => boolean,
@@ -116,7 +116,7 @@ export class Switcher<T, C = undefined, OUT = never, REMT = T, STATE = Unvalidat
      * @param callback - A function to execute if the object satisfies the condition set by the predicate.
      * @returns An instance of the `Switcher` with the new case added.
      */
-    public when<S extends REMT, OUT1>(predicate: Predicate<S>, callback: (arg: Extract<REMT, S>, context: Immutable<C>) => OUT1): Switcher<T, C, OUT | OUT1, Exclude<REMT, S>, Unvalidated>;
+    public when<S extends REMT, OUT1>(predicate: TypePredicate<S>, callback: (arg: Extract<REMT, S>, context: Immutable<C>) => OUT1): Switcher<T, C, OUT | OUT1, Exclude<REMT, S>, Unvalidated>;
     /**
      * Define a case based on an exact value match.
      *
@@ -125,7 +125,7 @@ export class Switcher<T, C = undefined, OUT = never, REMT = T, STATE = Unvalidat
      * @returns An instance of the `Switcher` with the new case added.
      */
     public when<Value extends REMT, OUT1>(value: Value, callback: (arg: Value, context: Immutable<C>) => OUT1): Switcher<T, C, OUT | OUT1, Exclude<REMT, Value>, Unvalidated>;
-    public when<OUT1>(typeOrPredicate: string | Predicate<REMT> | ((obj: REMT) => obj is Extract<REMT, Record<any, any>>), callback: (arg: any, context: any) => any): Switcher<T, C, OUT | OUT1, Exclude<REMT, any>, Unvalidated> {
+    public when<OUT1>(typeOrPredicate: string | TypePredicate<REMT> | ((obj: REMT) => obj is Extract<REMT, Record<any, any>>), callback: (arg: any, context: any) => any): Switcher<T, C, OUT | OUT1, Exclude<REMT, any>, Unvalidated> {
         if (typeof typeOrPredicate === "string") {
             const predicate = (arg: TypeObject) => {
                 if (typeof arg === 'string') return arg === typeOrPredicate;
