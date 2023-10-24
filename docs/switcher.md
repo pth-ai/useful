@@ -5,6 +5,33 @@ The `Switcher` class is a utility that provides a way to handle multiple type ch
 
 ## Examples
 
+## Basic Usage with Disjoint Types
+
+The Switcher's core strength lies in its ability to handle different types based on a discriminating property, such as `type`.
+Switcher has a built-in sugar for when using the `type` property so you can simply do `.when('<type value string>',...)`.
+
+Let's consider different shapes, and we'll use the `type` property to discriminate between them:
+
+```typescript
+type Shape = 
+    { type: 'circle', radius: number }
+    | { type: 'rectangle', width: number, height: number }
+    | { type: 'triangle', base: number, height: number };
+
+const builder = new Switcher<Shape>()
+    .when('circle', shape => `Drawing a circle with radius ${shape.radius}`)
+    .when('rectangle', shape => `Drawing a rectangle with dimensions ${shape.width}x${shape.height}`)
+    .when('triangle', shape => `Drawing a triangle with base ${shape.base} and height ${shape.height}`)
+    .checkExhaustive();
+
+console.log(builder.exec({type: 'circle', radius: 5}));       // Outputs: 'Drawing a circle with radius 5'
+console.log(builder.exec({type: 'rectangle', width: 4, height: 6})); // Outputs: 'Drawing a rectangle with dimensions 4x6'
+console.log(builder.exec({type: 'triangle', base: 3, height: 7}));   // Outputs: 'Drawing a triangle with base 3 and height 7'
+```
+
+This ensures type-safe access to the specific properties of each shape within their respective handlers. 
+The `.checkExhaustive()` method at the end ensures that all possible shapes are handled, adding an extra layer of type safety.
+
 ### Usage with Custom Type Guards
 To handle more complex type checks using custom type guards:
 
