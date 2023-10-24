@@ -1,13 +1,14 @@
 {
   "name": "useful",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "a collection of robust utilities that make your development smoother and more efficient",
   "author": "Roman Landenband",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc --outDir dist/",
+    "clean:build": "rimraf dist/**",
+    "build": "yarn clean:build && tsc --outDir dist/",
     "test": "NODE_ENV=test mocha --exit"
   },
   "keywords": [
@@ -33,6 +34,7 @@
     "@types/spark-md5": "^3.0.3",
     "chai": "^4.3.10",
     "mocha": "^10.2.0",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }
