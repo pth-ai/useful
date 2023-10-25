@@ -49,6 +49,8 @@ export function createTypeGuard<T>() {
 type Validated = "validated";
 type Unvalidated = "unvalidated";
 
+export const switcher = <T, CTX = undefined>() => new Switcher<T, CTX>()
+
 /**
  * A builder class to create a switch-case like structure for type-safe handling of different cases.
  */
@@ -64,7 +66,7 @@ type Unvalidated = "unvalidated";
  * For exhaustive checks and pattern matching, we recommend using disjoint union types for clearer
  * and more idiomatic type branching in TypeScript.
  */
-export class Switcher<T, C = undefined, OUT = never, REMT = T, STATE = Unvalidated> {
+export class Switcher<T, CTX = undefined, OUT = never, REMT = T, STATE = Unvalidated> {
 
     static create<T, OUT>(
         input: T,
@@ -77,11 +79,11 @@ export class Switcher<T, C = undefined, OUT = never, REMT = T, STATE = Unvalidat
 
     // Array to hold the cases for the switch-like structure
     private cases: Array<
-        { type: 'type-predicate', predicate: TypePredicate<any> | Guard<any, any>, callback: (arg: T, context: C) => OUT }
+        { type: 'type-predicate', predicate: TypePredicate<any> | Guard<any, any>, callback: (arg: T, context: CTX) => OUT }
         | {
         type: 'func-predicate',
         predicate: (arg: TypeObject) => boolean,
-        callback: (arg: T, context: Immutable<C>) => OUT
+        callback: (arg: T, context: Immutable<CTX>) => OUT
     }> = [];
 
     /**
@@ -98,7 +100,7 @@ export class Switcher<T, C = undefined, OUT = never, REMT = T, STATE = Unvalidat
      */
     public when<Type extends TypeValues<REMT>, OUT1>(type: Type, callback: (arg: Extract<REMT, {
         type: Type
-    }>, context: Immutable<C>) => OUT1): Switcher<T, C, OUT | OUT1, Exclude<REMT, {
+    }>, context: Immutable<CTX>) => OUT1): Switcher<T, CTX, OUT | OUT1, Exclude<REMT, {
         type: Type
     }>, Unvalidated>;
     /**
@@ -108,7 +110,7 @@ export class Switcher<T, C = undefined, OUT = never, REMT = T, STATE = Unvalidat
      * @param callback - A function to execute if the object matches the type as determined by the typeGuard.
      * @returns An instance of the `Switcher` with the new case added.
      */
-    public when<K extends PropertyKey, V extends any, OUT1, TGV extends Extract<REMT, Record<K, V>>>(typeGuard: ((obj: REMT) => obj is TGV), callback: (arg: TGV, context: Immutable<C>) => OUT1): Switcher<T, C, OUT | OUT1, Exclude<REMT, TGV>, Unvalidated>;
+    public when<K extends PropertyKey, V extends any, OUT1, TGV extends Extract<REMT, Record<K, V>>>(typeGuard: ((obj: REMT) => obj is TGV), callback: (arg: TGV, context: Immutable<CTX>) => OUT1): Switcher<T, CTX, OUT | OUT1, Exclude<REMT, TGV>, Unvalidated>;
     /**
      * Define a case using a normal TypeScript type guard
      *
@@ -116,7 +118,7 @@ export class Switcher<T, C = undefined, OUT = never, REMT = T, STATE = Unvalidat
      * @param callback - A function to execute if the object satisfies the condition set by the predicate.
      * @returns An instance of the `Switcher` with the new case added.
      */
-    public when<S extends REMT, OUT1>(predicate: TypePredicate<S>, callback: (arg: Extract<REMT, S>, context: Immutable<C>) => OUT1): Switcher<T, C, OUT | OUT1, Exclude<REMT, S>, Unvalidated>;
+    public when<S extends REMT, OUT1>(predicate: TypePredicate<S>, callback: (arg: Extract<REMT, S>, context: Immutable<CTX>) => OUT1): Switcher<T, CTX, OUT | OUT1, Exclude<REMT, S>, Unvalidated>;
     /**
      * Define a case based on an exact value match.
      *
@@ -124,8 +126,8 @@ export class Switcher<T, C = undefined, OUT = never, REMT = T, STATE = Unvalidat
      * @param callback - A function to execute if the object matches the provided value.
      * @returns An instance of the `Switcher` with the new case added.
      */
-    public when<Value extends REMT, OUT1>(value: Value, callback: (arg: Value, context: Immutable<C>) => OUT1): Switcher<T, C, OUT | OUT1, Exclude<REMT, Value>, Unvalidated>;
-    public when<OUT1>(typeOrPredicate: string | TypePredicate<REMT> | ((obj: REMT) => obj is Extract<REMT, Record<any, any>>), callback: (arg: any, context: any) => any): Switcher<T, C, OUT | OUT1, Exclude<REMT, any>, Unvalidated> {
+    public when<Value extends REMT, OUT1>(value: Value, callback: (arg: Value, context: Immutable<CTX>) => OUT1): Switcher<T, CTX, OUT | OUT1, Exclude<REMT, Value>, Unvalidated>;
+    public when<OUT1>(typeOrPredicate: string | TypePredicate<REMT> | ((obj: REMT) => obj is Extract<REMT, Record<any, any>>), callback: (arg: any, context: any) => any): Switcher<T, CTX, OUT | OUT1, Exclude<REMT, any>, Unvalidated> {
         if (typeof typeOrPredicate === "string") {
             const predicate = (arg: TypeObject) => {
                 if (typeof arg === 'string') return arg === typeOrPredicate;
@@ -141,8 +143,8 @@ export class Switcher<T, C = undefined, OUT = never, REMT = T, STATE = Unvalidat
     /**
      * Ensure that all possible cases have been handled.
      */
-    public checkExhaustive(this: Switcher<T, C, OUT, {} extends REMT ? {} : never, Unvalidated>): Switcher<T, C, OUT, {}, Validated>;
-    public checkExhaustive(this: Switcher<T, C, OUT, any, Unvalidated>): never; // This should cause a compile-time error if there are remaining types
+    public checkExhaustive(this: Switcher<T, CTX, OUT, {} extends REMT ? {} : never, Unvalidated>): Switcher<T, CTX, OUT, {}, Validated>;
+    public checkExhaustive(this: Switcher<T, CTX, OUT, any, Unvalidated>): never; // This should cause a compile-time error if there are remaining types
     public checkExhaustive(): any {
         // Runtime implementation does not matter as much here; the type checks are the main goal
         return this;
@@ -156,9 +158,9 @@ export class Switcher<T, C = undefined, OUT = never, REMT = T, STATE = Unvalidat
     // Overload signature for C being undefined
     public exec(this: Switcher<T, undefined, OUT, REMT, STATE>, arg: T): OUT;
     // Overload signature for C not undefined
-    public exec(this: Switcher<T, any, OUT, REMT, STATE>, arg: T, context: C): OUT;
+    public exec(this: Switcher<T, any, OUT, REMT, STATE>, arg: T, context: CTX): OUT;
     // Implementation
-    public exec(arg: T, context?: C): OUT {
+    public exec(arg: T, context?: CTX): OUT {
         for (const caseItem of this.cases) {
             if (caseItem.type === 'type-predicate' && caseItem.predicate(arg)) {
                 return caseItem.callback(arg, context ?? {} as any);
