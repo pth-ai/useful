@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {createTypeGuard, hasOwnPropertyPredicate, hasOwnPropertyValuePredicate, Switcher} from "../lib"; // Adjust the import path accordingly
+import {createTypeGuard, hasOwnPropertyPredicate, hasOwnPropertyValuePredicate, switcher, Switcher} from "../lib"; // Adjust the import path accordingly
 
 describe('Switcher', () => {
 
@@ -105,8 +105,8 @@ describe('Switcher', () => {
             .checkExhaustive();
 
         // Execute tests
-        expect(builder.exec({ age: 25, name: 'John' })).to.equal('User with age 25');
-        expect(builder.exec({ username: 'john_doe', email: 'john@example.com' })).to.equal('User with username john_doe');
+        expect(builder.exec({age: 25, name: 'John'})).to.equal('User with age 25');
+        expect(builder.exec({username: 'john_doe', email: 'john@example.com'})).to.equal('User with username john_doe');
     });
 
     it('should handle objects with properties created using the property value predicate factory', async () => {
@@ -128,9 +128,13 @@ describe('Switcher', () => {
             .checkExhaustive();
 
         // Execute tests
-        expect(builder.exec({ atype: 'first', age: 25, name: 'John' })).to.equal('User with age 25');
-        expect(builder.exec({ athing: 'second', username: 'john_doe', email: 'john@example.com' })).to.equal('User with username john_doe');
-        expect(builder.exec({ athingy: 'third', password: "1234", })).to.equal('User with password 1234');
+        expect(builder.exec({atype: 'first', age: 25, name: 'John'})).to.equal('User with age 25');
+        expect(builder.exec({
+            athing: 'second',
+            username: 'john_doe',
+            email: 'john@example.com'
+        })).to.equal('User with username john_doe');
+        expect(builder.exec({athingy: 'third', password: "1234",})).to.equal('User with password 1234');
     });
 
     it('should handle objects with properties created using the property value predicate factory 2', async () => {
@@ -152,9 +156,13 @@ describe('Switcher', () => {
             .checkExhaustive();
 
         // Execute tests
-        expect(builder.exec({ atype: 'first', age: 25, name: 'John' })).to.equal('User with age 25');
-        expect(builder.exec({ atype: 'second', username: 'john_doe', email: 'john@example.com' })).to.equal('User with username john_doe');
-        expect(builder.exec({ athingy: 'third', password: "1234", })).to.equal('User with password 1234');
+        expect(builder.exec({atype: 'first', age: 25, name: 'John'})).to.equal('User with age 25');
+        expect(builder.exec({
+            atype: 'second',
+            username: 'john_doe',
+            email: 'john@example.com'
+        })).to.equal('User with username john_doe');
+        expect(builder.exec({athingy: 'third', password: "1234",})).to.equal('User with password 1234');
     });
 
     it('should support the visitor patern using the `create` static method', async () => {
@@ -169,7 +177,7 @@ describe('Switcher', () => {
         const hasAThing = hasOwnPropertyValuePredicate('atype', 'second' as const);
         const hasAThingy = hasOwnPropertyValuePredicate('athingy', 'third' as const);
 
-        const result = Switcher.create({ atype: 'first', age: 25, name: 'John' } as User, switcher =>
+        const result = Switcher.create({atype: 'first', age: 25, name: 'John'} as User, switcher =>
             switcher
                 .when(hasAType, user => `User with age ${user.age}`)
                 .when(hasAThing, user => `User with age ${user.username}`)
@@ -179,6 +187,31 @@ describe('Switcher', () => {
 
         // Execute tests
         expect(result).to.equal('User with age 25');
+    });
+
+    it('should work with multiple specific values', async () => {
+
+        type Options = 'first' | 'second' | 'third'
+
+        const basicSwitcher = switcher<Options>()
+            .when('first', _ => '1')
+            .when('second', _ => '2')
+            .when('third', _ => '3')
+            .checkExhaustive()
+
+        const advancedSwitcher = switcher<Options>()
+            .when(['first', 'second'], _ => '1')
+            .when('third', _ => '3')
+            .checkExhaustive()
+
+
+        // Execute tests
+        expect(basicSwitcher.exec('first')).to.equal('1');
+        expect(basicSwitcher.exec('second')).to.equal('2');
+        expect(basicSwitcher.exec('third')).to.equal('3');
+        expect(advancedSwitcher.exec('first')).to.equal('1');
+        expect(advancedSwitcher.exec('second')).to.equal('1');
+        expect(advancedSwitcher.exec('third')).to.equal('3');
     });
 
 

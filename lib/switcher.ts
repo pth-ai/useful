@@ -127,12 +127,25 @@ export class Switcher<T, CTX = undefined, OUT = never, REMT = T, STATE = Unvalid
      * @returns An instance of the `Switcher` with the new case added.
      */
     public when<Value extends REMT, OUT1>(value: Value, callback: (arg: Value, context: Immutable<CTX>) => OUT1): Switcher<T, CTX, OUT | OUT1, Exclude<REMT, Value>, Unvalidated>;
-    public when<OUT1>(typeOrPredicate: string | TypePredicate<REMT> | ((obj: REMT) => obj is Extract<REMT, Record<any, any>>), callback: (arg: any, context: any) => any): Switcher<T, CTX, OUT | OUT1, Exclude<REMT, any>, Unvalidated> {
+    /**
+     * Define a case based on multiple exact value matches using spread.
+     *
+     * @param values - An array of values to match against the object.
+     * @param callback - A function to execute if the object matches one of the provided values.
+     * @returns An instance of the `Switcher` with the new case added.
+     */
+    public when<Values extends REMT[], OUT1>(values: [...Values], callback: (arg: Values[number], context: Immutable<CTX>) => OUT1): Switcher<T, CTX, OUT | OUT1, Exclude<REMT, Values[number]>, Unvalidated>;
+    public when<OUT1>(typeOrPredicate: string | TypePredicate<REMT> | ((obj: REMT) => obj is Extract<REMT, Record<any, any>>) | REMT[], callback: (arg: any, context: any) => any): Switcher<T, CTX, OUT | OUT1, Exclude<REMT, any>, Unvalidated> {
         if (typeof typeOrPredicate === "string") {
             const predicate = (arg: TypeObject) => {
                 if (typeof arg === 'string') return arg === typeOrPredicate;
                 return 'type' in arg && arg.type === typeOrPredicate;
             };
+        this.cases.push({type: 'func-predicate', predicate, callback});
+    } else if (Array.isArray(typeOrPredicate)) {
+        // New check for array of values
+        const values = typeOrPredicate;
+        const predicate = (arg: any) => values.includes(arg);
             this.cases.push({type: 'func-predicate', predicate, callback});
         } else {
             this.cases.push({type: 'type-predicate', predicate: typeOrPredicate, callback});
