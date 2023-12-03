@@ -66,7 +66,7 @@ export const switcher = <T, CTX = undefined>() => new Switcher<T, CTX>()
  * For exhaustive checks and pattern matching, we recommend using disjoint union types for clearer
  * and more idiomatic type branching in TypeScript.
  */
-export class Switcher<T, CTX = undefined, OUT = never, REMT = T, STATE = Unvalidated> {
+export class Switcher<T, CTX = undefined, OUT = never, REMT extends T | {} = T, STATE = Unvalidated> {
 
     static create<T, OUT>(
         input: T,
@@ -79,7 +79,11 @@ export class Switcher<T, CTX = undefined, OUT = never, REMT = T, STATE = Unvalid
 
     // Array to hold the cases for the switch-like structure
     private cases: Array<
-        { type: 'type-predicate', predicate: TypePredicate<any> | Guard<any, any>, callback: (arg: T, context: CTX) => OUT }
+        {
+            type: 'type-predicate',
+            predicate: TypePredicate<any> | Guard<any, any>,
+            callback: (arg: T, context: Immutable<CTX>) => OUT
+        }
         | {
         type: 'func-predicate',
         predicate: (arg: TypeObject) => boolean,
@@ -141,17 +145,28 @@ export class Switcher<T, CTX = undefined, OUT = never, REMT = T, STATE = Unvalid
                 if (typeof arg === 'string') return arg === typeOrPredicate;
                 return 'type' in arg && arg.type === typeOrPredicate;
             };
-        this.cases.push({type: 'func-predicate', predicate, callback});
-    } else if (Array.isArray(typeOrPredicate)) {
-        // New check for array of values
-        const values = typeOrPredicate;
-        const predicate = (arg: any) => values.includes(arg);
+            this.cases.push({type: 'func-predicate', predicate, callback});
+        } else if (Array.isArray(typeOrPredicate)) {
+            // New check for array of values
+            const values = typeOrPredicate;
+            const predicate = (arg: any) => values.includes(arg);
             this.cases.push({type: 'func-predicate', predicate, callback});
         } else {
             this.cases.push({type: 'type-predicate', predicate: typeOrPredicate, callback});
         }
         return this as any;
     }
+
+
+    public fallback<OUT1>(callback: (arg: REMT, context: Immutable<CTX>) => OUT1): Switcher<T, CTX, OUT | OUT1, {}, Validated> {
+        this.cases.push({
+            type: 'func-predicate',
+            predicate: () => true,
+            callback: callback as any
+        })
+        return this as any;
+    }
+
 
     /**
      * Ensure that all possible cases have been handled.

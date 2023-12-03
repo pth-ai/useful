@@ -212,6 +212,21 @@ describe('Switcher', () => {
         expect(advancedSwitcher.exec('first')).to.equal('1');
         expect(advancedSwitcher.exec('second')).to.equal('1');
         expect(advancedSwitcher.exec('third')).to.equal('3');
+    })
+
+    it('should allow fallback', async () => {
+
+        type Options = 'first' | 'second' | 'third'
+
+        const basicSwitcher = switcher<Options>()
+            .when('first', _ => '1')
+            .fallback(_ => '2')
+            .checkExhaustive()
+
+        // Execute tests
+        expect(basicSwitcher.exec('first')).to.equal('1');
+        expect(basicSwitcher.exec('second')).to.equal('2');
+        expect(basicSwitcher.exec('third')).to.equal('2');
     });
 
 

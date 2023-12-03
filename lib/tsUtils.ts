@@ -76,6 +76,7 @@ export const timePromise = <T>(name: string, op: () => Promise<T>): Promise<T> =
 
 
 export const isDefined = <T>(t: T | null | undefined): t is T => t !== null && t !== undefined;
+export const isTruthy = <T>(t: T | null | undefined | "" | false): t is T => t !== null && t !== undefined && !!t;
 
 type NonFalsey<T> = T extends false ? never : T;
 
