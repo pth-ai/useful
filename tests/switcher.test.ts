@@ -1,5 +1,12 @@
 import {expect} from "chai";
-import {createTypeGuard, hasOwnPropertyPredicate, hasOwnPropertyValuePredicate, switcher, Switcher} from "../lib"; // Adjust the import path accordingly
+import {
+    createTypeGuard,
+    hasOwnPropertyPredicate,
+    hasOwnPropertyValuePredicate,
+    isEitherOfType,
+    switcher,
+    Switcher
+} from "../lib"; // Adjust the import path accordingly
 
 describe('Switcher', () => {
 
@@ -163,6 +170,29 @@ describe('Switcher', () => {
             email: 'john@example.com'
         })).to.equal('User with username john_doe');
         expect(builder.exec({athingy: 'third', password: "1234",})).to.equal('User with password 1234');
+    });
+
+    it('should support an either type', async () => {
+        type Circle = {type: 'circle'}
+        type Square = {type: 'square'}
+        type Triangle = {type: 'triangle'}
+        type Shape = Circle | Square | Triangle;
+
+        // Create property predicates
+        const isCircle = (s: Shape): s is Circle => s.type === 'circle';
+        const isSquare = (s: Shape): s is Square => s.type === 'square';
+        const isTriangle = (s: Shape): s is Triangle => s.type === 'triangle';
+
+        // Use the Switcher with the property predicates
+        const builder = new Switcher<Shape>()
+            .when(isCircle, user => `it's a circle!`)
+            .when(isEitherOfType(isSquare, isTriangle), user => `It's either a square or a triangle!`)
+            .checkExhaustive();
+
+        // Execute tests
+        expect(builder.exec({type: 'circle'})).to.equal(`it's a circle!`);
+        expect(builder.exec({type: 'square'})).to.equal(`It's either a square or a triangle!`);
+        expect(builder.exec({type: 'triangle'})).to.equal(`It's either a square or a triangle!`);
     });
 
     it('should support the visitor patern using the `create` static method', async () => {

@@ -3,7 +3,7 @@ export type TypePredicate<T> = (arg: any) => arg is T;
 
 // The `isEitherOfType` function accepts a list of type predicates and returns a new predicate
 // that checks if a given value matches any of the provided types.
-export function isEitherOfType<T extends any[]>(...typePredicates: { [K in keyof T]: TypePredicate<T[K]> }): (value: unknown) => value is T[number] {
+export function isEitherOfType<T extends unknown[]>(...typePredicates: { [K in keyof T]: TypePredicate<T[K]> }): TypePredicate<T[number]> {
     return (value: unknown): value is T[number] => {
         // Iterate over each provided predicate
         for (const predicate of typePredicates) {
