@@ -1,4 +1,4 @@
-export const cc = <T>(i: Immutable<T>): Mutable<T> => {
+export const cc = <T>(i: Immutable<T> | Mutable<T> | T): Mutable<T> => {
     return JSON.parse(JSON.stringify(i)) as Mutable<T>;
 };
 
@@ -35,14 +35,14 @@ export const editImmutable = <T>(o: Immutable<T>, action: (editable: Mutable<T>)
  *
  * @param t - The immutable object to cast.
  */
-export const asMutable = <T>(t: Immutable<T>): Mutable<T> => t as Mutable<T>;
+export const asMutable = <T>(t: Immutable<T> | T): Mutable<T> => t as Mutable<T>;
 
 /**
  * Create a mutable copy of an immutable object.
  *
  * @param t - The immutable object to copy.
  */
-export const asMutableCopy = <T>(t: Immutable<T>): Mutable<T> => cc(t) as Mutable<T>;
+export const asMutableCopy = <T>(t: Immutable<T> | T): Mutable<T> => cc(t) as Mutable<T>;
 
 /**
  * Cast a mutable object to its immutable counterpart.
