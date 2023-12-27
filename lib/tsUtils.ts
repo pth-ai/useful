@@ -101,7 +101,7 @@ export interface TypedPromise<T, TErr> extends Promise<T> {
 
 export const ifTruthy = <T, OUT>(action: (_: T) => OUT) => (input: T | undefined | null) => input ? action(input) : undefined;
 
-export const keysOf = <T extends object, K extends keyof T>(o: T): K[] => Object.keys(o) as K[];
+export const keysOf = <T extends object, K extends keyof T & string>(o: T): K[] => Object.keys(o) as K[];
 
 export function assertIsDefined<T>(value: T | null | undefined | void, errorMsg: string = 'value was not defined'): asserts value is T {
     if (value === null || value === undefined) {
