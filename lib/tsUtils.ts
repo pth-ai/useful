@@ -163,6 +163,31 @@ export const tryFuncAsync = async <T, FB = undefined, HE = undefined>(action: ()
     }
 }
 
+export function sortObjectKeys(obj: object): any {
+    // If it's not an object, return it as is
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
+    }
+
+    // If it's an array, apply sorting to each element
+    if (Array.isArray(obj)) {
+        return obj.map(sortObjectKeys);
+    }
+
+    // If it's an object, sort its keys and apply sorting to each value
+    return keysOf(obj)
+        .sort()
+        .reduce((acc, key) => {
+            acc[key] = sortObjectKeys(obj[key]);
+            return acc;
+        }, {} as any);
+}
+
+export const objectToHashKey = (input: object, full?: boolean) => {
+    const objSortedKeys = sortObjectKeys(input);
+    return stringToHashKey(JSON.stringify(objSortedKeys), full)
+};
+
 export const stringToHashKey = (input: string, full?: boolean) => toBase64(SparkMD5.hash(input).toString()).slice(0, full ? undefined : 15);
 
 const toBinary = (string: string) => {
