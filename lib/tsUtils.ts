@@ -31,7 +31,9 @@ export const delayedPromise = <T>(delayMS: number, action: () => Promise<T>): Pr
 
 export const getRandomInt = (max: number): number => Math.floor(Math.random() * Math.floor(max));
 
-const _retryPromise = async <T>(name: string, action: () => Promise<T>, maxRetries: number, attempt: number = 0, ignoreErrors?: (e: any) => boolean): Promise<T> => {
+const _retryPromise = async <T>(name: string, action: () => Promise<T>, maxRetries: number,
+                                attempt: number = 0, ignoreErrors?: (e: any) => boolean,
+                                lastFallback?: () => Promise<T>): Promise<T> => {
     try {
         return await action()
     } catch (e) {
@@ -42,15 +44,19 @@ const _retryPromise = async <T>(name: string, action: () => Promise<T>, maxRetri
             throw e;
         } else {
             return await delayedPromise(1000 + getRandomInt(300), () => {
-                console.debug(`_retryPromise [${name}] retrying..`);
-                return _retryPromise(name, action, maxRetries, attempt + 1, ignoreErrors);
+                console.debug(`_retryPromise [${name}] attempt [${attempt}] retrying..`);
+                return _retryPromise(name,
+                    lastFallback && maxRetries >= attempt + 1 ? lastFallback : action,
+                    maxRetries, attempt + 1, ignoreErrors, lastFallback);
             });
         }
     }
 };
 
-export const retryPromise = <T>(name: string, action: () => Promise<T>, maxRetries: number, ignoreErrors?: (e: any) => boolean): Promise<T> =>
-    _retryPromise(name, action, maxRetries, 0, ignoreErrors);
+export const retryPromise = <T>(name: string, action: () => Promise<T>, maxRetries: number,
+                                ignoreErrors?: (e: any) => boolean,
+                                lastFallback?: () => Promise<T>): Promise<T> =>
+    _retryPromise(name, action, maxRetries, 0, ignoreErrors, lastFallback);
 
 export const detailedErrorName = 'DetailedError';
 
