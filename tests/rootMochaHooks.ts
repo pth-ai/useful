@@ -1,7 +1,7 @@
 import {Context, Done} from "mocha";
-import * as FakeTimers from "@sinonjs/fake-timers";
+// import * as FakeTimers from "@sinonjs/fake-timers";
 
-const clock = FakeTimers.install();
+// const clock = FakeTimers.install();
 
 exports.mochaGlobalSetup = async function() {
     // ...
@@ -17,9 +17,7 @@ exports.mochaGlobalSetup = async function() {
 export const mochaHooks = (): Mocha.RootHookObject => {
     return {
         beforeAll(this: Context, done: Done) {
-            const context = {
-                clock,
-            };
+            const context = {};
             //
             Object.assign(this, context);
             done();

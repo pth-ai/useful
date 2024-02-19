@@ -19,10 +19,10 @@ export const truthies = <T extends {
 
 export const delayedPromise = <T>(delayMS: number, action: () => Promise<T>): Promise<T> =>
     new Promise<T>((resolve, reject) => {
-        const timer = setTimeout(() => {
+        const timer = setTimeout(async () => {
             clearTimeout(timer);
             try {
-                resolve(action());
+                resolve(await action());
             } catch (e) {
                 reject(e)
             }
@@ -43,7 +43,7 @@ const _retryPromise = async <T>(name: string, action: () => Promise<T>, maxRetri
             console.error(`max retries reached [${name}] error=[${String(e)}] (original error=[${String(e)}])`);
             throw e;
         } else {
-            return await delayedPromise(1000 + getRandomInt(300), () => {
+            return await delayedPromise(300 + getRandomInt(300) * (attempt + 1), () => {
                 console.debug(`_retryPromise [${name}] attempt [${attempt}] retrying..`);
                 return _retryPromise(name,
                     lastFallback && maxRetries >= attempt + 1 ? lastFallback : action,
