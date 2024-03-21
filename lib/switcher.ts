@@ -32,6 +32,8 @@ function hasTypeProperty(arg: any): arg is TypeObject {
     return typeof arg === 'object' && arg !== null && 'type' in arg;
 }
 
+export type PrefixedType<T, P extends string> = T extends `${P}${infer R}` ? `${P}${R}` : never;
+
 /**
  * Utility type to guard values based on a key and its corresponding value type.
  */
@@ -45,6 +47,24 @@ export function createTypeGuard<T>() {
     };
 }
 
+/**
+ * Creates a runtime type guard function for objects based on a property name and a prefix.
+ * The type guard checks if the specified property's value starts with the given prefix.
+ *
+ * @param prop The property name to check in the object.
+ * @param prefix The prefix to check for in the property's value.
+ * @returns A type guard function that checks if an object's property value starts with the given prefix.
+ */
+export function createPrefixTypeGuard<T extends object>() {
+    return <K extends keyof T, P extends string>(prop: K, prefix: P) => {
+        return (obj: T): obj is T & Record<K, PrefixedType<T[K], P>> => {
+            if (typeof obj[prop] === "string") {
+                return (obj[prop] as string).startsWith(prefix);
+            }
+            return false;
+        };
+    }
+}
 
 type Validated = "validated";
 type Unvalidated = "unvalidated";
@@ -157,6 +177,27 @@ export class Switcher<T, CTX = undefined, OUT = never, REMT extends T | {} = T, 
         return this as any;
     }
 
+    /**
+     * Define a case based on the 'type' field of an object starting with a specific prefix.
+     *
+     * @param prefix - The prefix to check against the object's 'type' field.
+     * @param callback - A function to execute if the object's type starts with the provided prefix.
+     * @returns An instance of the `Switcher` with the new case added.
+     */
+    public whenTypeStartsWith<P extends string, OUT1>(prefix: P, callback: (arg: Extract<REMT, {
+        type: PrefixedType<TypeValues<REMT>, P>
+    }>, context: Immutable<CTX>) => OUT1): Switcher<T, CTX, OUT | OUT1, Exclude<REMT, {
+        type: PrefixedType<TypeValues<REMT>, P>
+    }>, Unvalidated> {
+        const predicate = (arg: TypeObject): arg is Extract<REMT, { type: PrefixedType<TypeValues<REMT>, P> }> => {
+            if (typeof arg === 'string') {
+                return arg.startsWith(prefix);
+            }
+            return 'type' in arg && typeof arg.type === 'string' && arg.type.startsWith(prefix);
+        };
+        this.cases.push({type: 'type-predicate', predicate, callback: callback as any});
+        return this as any;
+    }
 
     public fallback<OUT1>(callback: (arg: REMT, context: Immutable<CTX>) => OUT1): Switcher<T, CTX, OUT | OUT1, {}, Validated> {
         this.cases.push({
