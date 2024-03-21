@@ -66,6 +66,22 @@ export function createPrefixTypeGuard<T extends object>() {
     }
 }
 
+/**
+ * Creates a runtime type guard function for objects based on a property name and a prefix.
+ * The type guard checks if the specified property's value starts with the given prefix.
+ *
+ * @param prop The property name to check in the object.
+ * @param prefix The prefix to check for in the property's value.
+ * @returns A type guard function that checks if an object's property value starts with the given prefix.
+ */
+export function createPrefixTypeValueGuard<T extends string>() {
+    return <P extends string>(prefix: P) => {
+        return (obj: T): obj is T & PrefixedType<T, P> => {
+            return obj.startsWith(prefix);
+        };
+    }
+}
+
 type Validated = "validated";
 type Unvalidated = "unvalidated";
 

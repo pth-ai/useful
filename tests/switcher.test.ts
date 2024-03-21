@@ -1,6 +1,6 @@
 import {expect} from "chai";
 import {
-    createPrefixTypeGuard,
+    createPrefixTypeGuard, createPrefixTypeValueGuard,
     createTypeGuard,
     hasOwnPropertyPredicate,
     hasOwnPropertyValuePredicate,
@@ -299,6 +299,26 @@ describe('Switcher', () => {
         expect(builder.exec({type: 'pref1-type2'})).to.equal('handled pref1 prefixed');
         expect(builder.exec({type: 'pref2-type'})).to.equal('handled pref2-type');
         expect(builder.exec({type: 'pref3-type'})).to.equal('handled pref3-type');
+    });
+
+    it('should correctly handle a union of prefixed types values using guard', async () => {
+        // Define a union of type strings
+        type MyU = "pref1-type1" | "pref1-type2" | "pref2-type" | "pref3-type";
+
+        const pref1Prefix = createPrefixTypeValueGuard<MyU>()( 'pref1');
+
+        // Create a new Switcher instance for the union type
+        const builder = switcher<MyU>()
+            .when(pref1Prefix, () => 'handled pref1 prefixed')
+            .when('pref2-type', () => 'handled pref2-type')
+            .when('pref3-type', () => 'handled pref3-type')
+            .checkExhaustive()
+
+        // Execute and assert the outcomes for each type in the union
+        expect(builder.exec('pref1-type1')).to.equal('handled pref1 prefixed');
+        expect(builder.exec('pref1-type2')).to.equal('handled pref1 prefixed');
+        expect(builder.exec('pref2-type')).to.equal('handled pref2-type');
+        expect(builder.exec('pref3-type')).to.equal('handled pref3-type');
     });
 
 });
