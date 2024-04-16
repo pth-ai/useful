@@ -194,7 +194,9 @@ export const objectToHashKey = (input: object, full?: boolean) => {
     return stringToHashKey(JSON.stringify(objSortedKeys), full)
 };
 
-export const stringToHashKey = (input: string, full?: boolean) => toBase64(SparkMD5.hash(input).toString()).slice(0, full ? undefined : 15);
+export const stringToHashKey = (input: string, full?: boolean) => {
+    return SparkMD5.hash(input).slice(0, full ? undefined : 15);
+};
 
 const toBinary = (string: string) => {
     const codeUnits = Uint16Array.from(
