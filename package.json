@@ -9,7 +9,8 @@
   "scripts": {
     "clean:build": "rimraf dist/**",
     "build": "yarn clean:build && tsc --outDir dist/",
-    "test": "NODE_ENV=test mocha --exit"
+    "test": "NODE_ENV=test mocha --require ts-node/register 'src/**/*.spec.ts' --exit",
+    "test_": "NODE_ENV=test mocha --exit"
   },
   "keywords": [
     "String",
@@ -27,17 +28,22 @@
     "spark-md5": "^3.0.2"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^11.2.1",
+    "@sinonjs/fake-timers": "^11.2.2",
     "@tsconfig/node18": "^18.2.2",
-    "@types/chai": "^4.3.9",
-    "@types/mocha": "^10.0.3",
-    "@types/node": "^20.8.7",
-    "@types/sinonjs__fake-timers": "^8.1.4",
-    "@types/spark-md5": "^3.0.3",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^18.15.13",
+    "@types/sinonjs__fake-timers": "^8.1.5",
+    "@types/spark-md5": "^3.0.4",
     "chai": "^4.3.10",
-    "mocha": "^10.2.0",
+    "mocha": "^10.3.0",
     "rimraf": "^5.0.5",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "ts-node": "^10.9.2",
+    "typescript": "5.2.2"
+  },
+  "mocha": {
+    "require": [
+      "ts-node/register"
+    ]
   }
 }
