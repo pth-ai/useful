@@ -127,14 +127,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/node18@npm:^18.2.2":
-  version: 18.2.2
-  resolution: "@tsconfig/node18@npm:18.2.2"
-  checksum: 10c0/71f2c65616125f3ec8c85704ea55100d2131e0c01cbf7a247e5f6f7d617dfaafd5ff4a09b4193bceface4b4f44e9aa909da8e9af3910c01a0661f202386e40af
+"@tsconfig/node18@npm:^18.2.4":
+  version: 18.2.4
+  resolution: "@tsconfig/node18@npm:18.2.4"
+  checksum: 10c0/cdfd17f212660374eb2765cd5907b2252e43cfa2623cd52307a49f004327ef49bbe7d53c78b0aca57f33e9a5cb0d7d2eb5ded9be1235e6212f65c9f0699322b6
   languageName: node
   linkType: hard
 
-"@types/chai@npm:^4.3.11":
+"@types/chai@npm:^4.3.14":
   version: 4.3.14
   resolution: "@types/chai@npm:4.3.14"
   checksum: 10c0/7712594c1e457cb99c7227d0fe1afcbb900bbd1369494ec2d2b0d79a383057a09ab13d23d7b300287394b99995a8c017aa55e6b9a369b77910bc10310ba504af
@@ -148,7 +148,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.15.13":
+"@types/node@npm:^18.19.31":
   version: 18.19.31
   resolution: "@types/node@npm:18.19.31"
   dependencies:
@@ -347,9 +347,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chai@npm:^4.3.10":
-  version: 4.3.10
-  resolution: "chai@npm:4.3.10"
+"chai@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "chai@npm:4.4.1"
   dependencies:
     assertion-error: "npm:^1.1.0"
     check-error: "npm:^1.0.3"
@@ -358,7 +358,7 @@ __metadata:
     loupe: "npm:^2.3.6"
     pathval: "npm:^1.1.1"
     type-detect: "npm:^4.0.8"
-  checksum: 10c0/c887d24f67be6fb554c7ebbde3bb0568697a8833d475e4768296916891ba143f25fc079f6eb34146f3dd5a3279d34c1f387c32c9a6ab288e579f948d9ccf53fe
+  checksum: 10c0/91590a8fe18bd6235dece04ccb2d5b4ecec49984b50924499bdcd7a95c02cb1fd2a689407c19bb854497bde534ef57525cfad6c7fdd2507100fd802fbc2aefbd
   languageName: node
   linkType: hard
 
@@ -1116,7 +1116,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:^10.3.0":
+"mocha@npm:^10.4.0":
   version: 10.4.0
   resolution: "mocha@npm:10.4.0"
   dependencies:
@@ -1641,14 +1641,14 @@ __metadata:
   resolution: "useful@workspace:."
   dependencies:
     "@sinonjs/fake-timers": "npm:^11.2.2"
-    "@tsconfig/node18": "npm:^18.2.2"
-    "@types/chai": "npm:^4.3.11"
+    "@tsconfig/node18": "npm:^18.2.4"
+    "@types/chai": "npm:^4.3.14"
     "@types/mocha": "npm:^10.0.6"
-    "@types/node": "npm:^18.15.13"
+    "@types/node": "npm:^18.19.31"
     "@types/sinonjs__fake-timers": "npm:^8.1.5"
     "@types/spark-md5": "npm:^3.0.4"
-    chai: "npm:^4.3.10"
-    mocha: "npm:^10.3.0"
+    chai: "npm:^4.4.1"
+    mocha: "npm:^10.4.0"
     rimraf: "npm:^5.0.5"
     spark-md5: "npm:^3.0.2"
     ts-node: "npm:^10.9.2"
