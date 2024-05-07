@@ -134,10 +134,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:^4.3.14":
-  version: 4.3.14
-  resolution: "@types/chai@npm:4.3.14"
-  checksum: 10c0/7712594c1e457cb99c7227d0fe1afcbb900bbd1369494ec2d2b0d79a383057a09ab13d23d7b300287394b99995a8c017aa55e6b9a369b77910bc10310ba504af
+"@types/chai@npm:^4.3.16":
+  version: 4.3.16
+  resolution: "@types/chai@npm:4.3.16"
+  checksum: 10c0/745d4a9be429d5d86a7ab26064610b8957fe12dd80e94dc7d0707cf3db1c889e3ffe0d73d69bb15e6d376bf4462a7a75e9d8fc1051750b5d656d6cfe459829b7
   languageName: node
   linkType: hard
 
@@ -148,12 +148,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.19.31":
-  version: 18.19.31
-  resolution: "@types/node@npm:18.19.31"
+"@types/node@npm:^18.19.32":
+  version: 18.19.32
+  resolution: "@types/node@npm:18.19.32"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/bfebae8389220c0188492c82eaf328f4ba15e6e9b4abee33d6bf36d3b13f188c2f53eb695d427feb882fff09834f467405e2ed9be6aeb6ad4705509822d2ea08
+  checksum: 10c0/29d60ddd83a8216daf90d4bf101a6eff7fcf034b24bb89da90291017ec54c33b5ce30e7c125aef3f23f756037f0c382d15ebd434ad9c4536c8db8f1fb129f0ce
   languageName: node
   linkType: hard
 
@@ -1642,9 +1642,9 @@ __metadata:
   dependencies:
     "@sinonjs/fake-timers": "npm:^11.2.2"
     "@tsconfig/node18": "npm:^18.2.4"
-    "@types/chai": "npm:^4.3.14"
+    "@types/chai": "npm:^4.3.16"
     "@types/mocha": "npm:^10.0.6"
-    "@types/node": "npm:^18.19.31"
+    "@types/node": "npm:^18.19.32"
     "@types/sinonjs__fake-timers": "npm:^8.1.5"
     "@types/spark-md5": "npm:^3.0.4"
     chai: "npm:^4.4.1"
