@@ -7,4 +7,3 @@ spec:
 bail: true
 async-only: true
 parallel: false
-
