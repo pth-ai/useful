@@ -1,4 +1,5 @@
 import SparkMD5 from "spark-md5";
+import {logger} from "./logging";
 
 export function hasOwnProperty<X extends object,
     Y extends PropertyKey>(obj: X, prop: Y): obj is Extract<X, Record<Y, unknown>> {
@@ -40,11 +41,11 @@ const _retryPromise = async <T>(name: string, action: () => Promise<T>, maxRetri
         if (ignoreErrors && ignoreErrors(e)) {
             throw e;
         } else if (attempt >= maxRetries) {
-            console.error(`max retries reached [${name}] error=[${String(e)}] (original error=[${String(e)}])`);
+            logger.error(`max retries reached [${name}] error=[${String(e)}] (original error=[${String(e)}])`, e, {name});
             throw e;
         } else {
             return await delayedPromise(300 + getRandomInt(300) * (attempt + 1), () => {
-                console.debug(`_retryPromise [${name}] attempt [${attempt}] retrying..`);
+                logger.debug(`_retryPromise [${name}] attempt [${attempt}] retrying..`);
                 return _retryPromise(name,
                     lastFallback && maxRetries >= attempt + 1 ? lastFallback : action,
                     maxRetries, attempt + 1, ignoreErrors, lastFallback);
@@ -75,7 +76,7 @@ export const timePromise = <T>(name: string, op: () => Promise<T>): Promise<T> =
     return op()
         .then(result => {
             const endTime = new Date().getTime();
-            console.debug(`operation [${name}] took [${endTime - startTime}]ms`);
+            logger.debug(`operation [${name}] took [${endTime - startTime}]ms`);
             return result;
         });
 };
@@ -238,4 +239,33 @@ export function createAlphaNumericalComparator<T>(...properties: (keyof T)[]) {
         }
         return 0;
     };
+}
+
+export function zip<T, U>(array1: T[], array2: U[]): [T, U][] {
+    const minLength = Math.min(array1.length, array2.length);
+    const zippedArray: [T, U][] = [];
+
+    for (let i = 0; i < minLength; i++) {
+        zippedArray.push([array1[i], array2[i]]);
+    }
+
+    return zippedArray;
+}
+
+type ZipToObject<K extends PropertyKey, V> = {
+    [key in K]: V;
+};
+
+export function zipToObject<K extends PropertyKey, V>(keys: K[], values: V[]): ZipToObject<K, V> {
+    const zippedArray = zip(keys, values);
+    return Object.fromEntries(zippedArray) as ZipToObject<K, V>;
+}
+
+export async function executeInSync<T>(operations: (() => Promise<T>)[]): Promise<T[]> {
+    const results: T[] = [];
+    for (const operation of operations) {
+        const result = await operation();
+        results.push(result);
+    }
+    return results;
 }
