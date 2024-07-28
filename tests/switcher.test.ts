@@ -1,4 +1,3 @@
-import {expect} from "chai";
 import {
     createPrefixTypeGuard, createPrefixTypeValueGuard,
     createTypeGuard,
@@ -17,8 +16,8 @@ describe('Switcher', () => {
             .when('foo', () => 'handled foo')
             .when('bar', () => 'handled bar');
 
-        expect(builder.exec({type: 'foo'})).to.equal('handled foo');
-        expect(builder.exec({type: 'bar'})).to.equal('handled bar');
+        expect(builder.exec({type: 'foo'})).toEqual('handled foo');
+        expect(builder.exec({type: 'bar'})).toEqual('handled bar');
     });
 
     // Advanced usage with custom type guards
@@ -33,8 +32,8 @@ describe('Switcher', () => {
             .when(isRectangle, shape => `Rectangle with dimensions ${shape.width}x${shape.height}`)
             .checkExhaustive();
 
-        expect(builder.exec({kind: 'circle', radius: 5})).to.equal('Circle with radius 5');
-        expect(builder.exec({kind: 'rectangle', width: 4, height: 6})).to.equal('Rectangle with dimensions 4x6');
+        expect(builder.exec({kind: 'circle', radius: 5})).toEqual('Circle with radius 5');
+        expect(builder.exec({kind: 'rectangle', width: 4, height: 6})).toEqual('Rectangle with dimensions 4x6');
     });
 
     it('should handle using normal TypeScript type predicates', async () => {
@@ -50,8 +49,8 @@ describe('Switcher', () => {
             .when(isRectangle, shape => `Rectangle with dimensions ${shape.width}x${shape.height}`)
             .checkExhaustive();
 
-        expect(builder.exec({kind: 'circle', radius: 5})).to.equal('Circle with radius 5');
-        expect(builder.exec({kind: 'rectangle', width: 4, height: 6})).to.equal('Rectangle with dimensions 4x6');
+        expect(builder.exec({kind: 'circle', radius: 5})).toEqual('Circle with radius 5');
+        expect(builder.exec({kind: 'rectangle', width: 4, height: 6})).toEqual('Rectangle with dimensions 4x6');
     });
 
     // Edge cases
@@ -59,8 +58,8 @@ describe('Switcher', () => {
         const builder = new Switcher<{ type: string }>()
             .when('foo', () => 'handled foo');
 
-        expect(builder.exec.bind(builder, {type: 'foo'})).to.not.throw();
-        expect(builder.exec.bind(builder, {type: 'bar'})).to.throw("No matching case");
+        expect(builder.exec.bind(builder, {type: 'foo'})).not.toThrow();
+        expect(builder.exec.bind(builder, {type: 'bar'})).toThrow("No matching case");
     });
 
     it('should allow for exhaustive checks', async () => {
@@ -71,8 +70,8 @@ describe('Switcher', () => {
             .when('bar', () => 'handled bar')
             .checkExhaustive();
 
-        expect(builder.exec({type: 'foo'})).to.equal('handled foo');
-        expect(builder.exec({type: 'bar'})).to.equal('handled bar');
+        expect(builder.exec({type: 'foo'})).toEqual('handled foo');
+        expect(builder.exec({type: 'bar'})).toEqual('handled bar');
     });
 
     it('should handle exact value matches', async () => {
@@ -84,8 +83,8 @@ describe('Switcher', () => {
             .when('case3', () => 3)
             .checkExhaustive();
 
-        expect(builder.exec('case1')).to.equal(1);
-        expect(builder.exec('case2')).to.equal(2);
+        expect(builder.exec('case1')).toEqual(1);
+        expect(builder.exec('case2')).toEqual(2);
     });
 
     it('should handle context correctly', async () => {
@@ -94,7 +93,7 @@ describe('Switcher', () => {
         const builder = new Switcher<{ type: 'foo' }, Context>()
             .when('foo', (obj, ctx) => `${ctx.prefix} ${obj.type}`);
 
-        expect(builder.exec({type: 'foo'}, {prefix: 'Handled'})).to.equal('Handled foo');
+        expect(builder.exec({type: 'foo'}, {prefix: 'Handled'})).toEqual('Handled foo');
     });
 
     it('should handle objects with properties created using the property predicate factory', async () => {
@@ -113,8 +112,8 @@ describe('Switcher', () => {
             .checkExhaustive();
 
         // Execute tests
-        expect(builder.exec({age: 25, name: 'John'})).to.equal('User with age 25');
-        expect(builder.exec({username: 'john_doe', email: 'john@example.com'})).to.equal('User with username john_doe');
+        expect(builder.exec({age: 25, name: 'John'})).toEqual('User with age 25');
+        expect(builder.exec({username: 'john_doe', email: 'john@example.com'})).toEqual('User with username john_doe');
     });
 
     it('should handle objects with properties created using the property value predicate factory', async () => {
@@ -136,13 +135,13 @@ describe('Switcher', () => {
             .checkExhaustive();
 
         // Execute tests
-        expect(builder.exec({atype: 'first', age: 25, name: 'John'})).to.equal('User with age 25');
+        expect(builder.exec({atype: 'first', age: 25, name: 'John'})).toEqual('User with age 25');
         expect(builder.exec({
             athing: 'second',
             username: 'john_doe',
             email: 'john@example.com'
-        })).to.equal('User with username john_doe');
-        expect(builder.exec({athingy: 'third', password: "1234",})).to.equal('User with password 1234');
+        })).toEqual('User with username john_doe');
+        expect(builder.exec({athingy: 'third', password: "1234",})).toEqual('User with password 1234');
     });
 
     it('should handle objects with properties created using the property value predicate factory 2', async () => {
@@ -164,13 +163,13 @@ describe('Switcher', () => {
             .checkExhaustive();
 
         // Execute tests
-        expect(builder.exec({atype: 'first', age: 25, name: 'John'})).to.equal('User with age 25');
+        expect(builder.exec({atype: 'first', age: 25, name: 'John'})).toEqual('User with age 25');
         expect(builder.exec({
             atype: 'second',
             username: 'john_doe',
             email: 'john@example.com'
-        })).to.equal('User with username john_doe');
-        expect(builder.exec({athingy: 'third', password: "1234",})).to.equal('User with password 1234');
+        })).toEqual('User with username john_doe');
+        expect(builder.exec({athingy: 'third', password: "1234",})).toEqual('User with password 1234');
     });
 
     it('should support an either type', async () => {
@@ -191,9 +190,9 @@ describe('Switcher', () => {
             .checkExhaustive();
 
         // Execute tests
-        expect(builder.exec({type: 'circle'})).to.equal(`it's a circle!`);
-        expect(builder.exec({type: 'square'})).to.equal(`It's either a square or a triangle!`);
-        expect(builder.exec({type: 'triangle'})).to.equal(`It's either a square or a triangle!`);
+        expect(builder.exec({type: 'circle'})).toEqual(`it's a circle!`);
+        expect(builder.exec({type: 'square'})).toEqual(`It's either a square or a triangle!`);
+        expect(builder.exec({type: 'triangle'})).toEqual(`It's either a square or a triangle!`);
     });
 
     it('should support the visitor patern using the `create` static method', async () => {
@@ -217,7 +216,7 @@ describe('Switcher', () => {
         )
 
         // Execute tests
-        expect(result).to.equal('User with age 25');
+        expect(result).toEqual('User with age 25');
     });
 
     it('should work with multiple specific values', async () => {
@@ -237,12 +236,12 @@ describe('Switcher', () => {
 
 
         // Execute tests
-        expect(basicSwitcher.exec('first')).to.equal('1');
-        expect(basicSwitcher.exec('second')).to.equal('2');
-        expect(basicSwitcher.exec('third')).to.equal('3');
-        expect(advancedSwitcher.exec('first')).to.equal('1');
-        expect(advancedSwitcher.exec('second')).to.equal('1');
-        expect(advancedSwitcher.exec('third')).to.equal('3');
+        expect(basicSwitcher.exec('first')).toEqual('1');
+        expect(basicSwitcher.exec('second')).toEqual('2');
+        expect(basicSwitcher.exec('third')).toEqual('3');
+        expect(advancedSwitcher.exec('first')).toEqual('1');
+        expect(advancedSwitcher.exec('second')).toEqual('1');
+        expect(advancedSwitcher.exec('third')).toEqual('3');
     })
 
     it('should allow fallback', async () => {
@@ -255,9 +254,9 @@ describe('Switcher', () => {
             .checkExhaustive()
 
         // Execute tests
-        expect(basicSwitcher.exec('first')).to.equal('1');
-        expect(basicSwitcher.exec('second')).to.equal('2');
-        expect(basicSwitcher.exec('third')).to.equal('2');
+        expect(basicSwitcher.exec('first')).toEqual('1');
+        expect(basicSwitcher.exec('second')).toEqual('2');
+        expect(basicSwitcher.exec('third')).toEqual('2');
     });
 
 
@@ -274,10 +273,10 @@ describe('Switcher', () => {
 
 
         // Execute and assert the outcomes for each type in the union
-        expect(builder.exec({type: 'pref1-type1'})).to.equal('handled pref1-type1');
-        expect(builder.exec({type: 'pref1-type2'})).to.equal('handled pref1-type1');
-        expect(builder.exec({type: 'pref2-type'})).to.equal('handled pref2-type');
-        expect(builder.exec({type: 'pref3-type'})).to.equal('handled pref3-type');
+        expect(builder.exec({type: 'pref1-type1'})).toEqual('handled pref1-type1');
+        expect(builder.exec({type: 'pref1-type2'})).toEqual('handled pref1-type1');
+        expect(builder.exec({type: 'pref2-type'})).toEqual('handled pref2-type');
+        expect(builder.exec({type: 'pref3-type'})).toEqual('handled pref3-type');
     })
 
     it('should correctly handle a union of prefixed types using guard', async () => {
@@ -295,10 +294,10 @@ describe('Switcher', () => {
 
 
         // Execute and assert the outcomes for each type in the union
-        expect(builder.exec({type: 'pref1-type1'})).to.equal('handled pref1 prefixed');
-        expect(builder.exec({type: 'pref1-type2'})).to.equal('handled pref1 prefixed');
-        expect(builder.exec({type: 'pref2-type'})).to.equal('handled pref2-type');
-        expect(builder.exec({type: 'pref3-type'})).to.equal('handled pref3-type');
+        expect(builder.exec({type: 'pref1-type1'})).toEqual('handled pref1 prefixed');
+        expect(builder.exec({type: 'pref1-type2'})).toEqual('handled pref1 prefixed');
+        expect(builder.exec({type: 'pref2-type'})).toEqual('handled pref2-type');
+        expect(builder.exec({type: 'pref3-type'})).toEqual('handled pref3-type');
     });
 
     it('should correctly handle a union of prefixed types values using guard', async () => {
@@ -315,10 +314,10 @@ describe('Switcher', () => {
             .checkExhaustive()
 
         // Execute and assert the outcomes for each type in the union
-        expect(builder.exec('pref1-type1')).to.equal('handled pref1 prefixed');
-        expect(builder.exec('pref1-type2')).to.equal('handled pref1 prefixed');
-        expect(builder.exec('pref2-type')).to.equal('handled pref2-type');
-        expect(builder.exec('pref3-type')).to.equal('handled pref3-type');
+        expect(builder.exec('pref1-type1')).toEqual('handled pref1 prefixed');
+        expect(builder.exec('pref1-type2')).toEqual('handled pref1 prefixed');
+        expect(builder.exec('pref2-type')).toEqual('handled pref2-type');
+        expect(builder.exec('pref3-type')).toEqual('handled pref3-type');
     });
 
 });

@@ -1,4 +1,3 @@
-import {expect} from "chai";
 import {isEitherOfType, isNot, Singular, Resolved, ResolvedObject} from "../lib";
 import {objectToHashKey, sortObjectKeys, stringToHashKey} from "../lib";  // Adjust the import path accordingly
 
@@ -11,9 +10,9 @@ describe('utils', () => {
 
         const isStringOrNumber = isEitherOfType(isString, isNumber);
 
-        expect(isStringOrNumber('hello')).to.equal(true);
-        expect(isStringOrNumber(5)).to.equal(true);
-        expect(isStringOrNumber(true)).to.equal(false);
+        expect(isStringOrNumber('hello')).toEqual(true);
+        expect(isStringOrNumber(5)).toEqual(true);
+        expect(isStringOrNumber(true)).toEqual(false);
     });
 
     // Basic usage for isNot
@@ -21,8 +20,8 @@ describe('utils', () => {
         const isString = (val: string | number): val is string => typeof val === 'string';
         const isNotString = isNot(isString);
 
-        expect(isNotString('hello')).to.equal(false);
-        expect(isNotString(5)).to.equal(true);
+        expect(isNotString('hello')).toEqual(false);
+        expect(isNotString(5)).toEqual(true);
     });
 
     // Basic usage for Singular type
@@ -31,7 +30,7 @@ describe('utils', () => {
         type TestItem = Singular<TestArray>;
 
         const item: TestItem = 5;
-        expect(item).to.equal(5);
+        expect(item).toEqual(5);
     });
 
     // Basic usage for Resolved type
@@ -40,7 +39,7 @@ describe('utils', () => {
         type ResolvedTestPromise = Resolved<TestPromise>;
 
         const resolvedValue: ResolvedTestPromise = 'hello';
-        expect(resolvedValue).to.equal('hello');
+        expect(resolvedValue).toEqual('hello');
     });
 
     // Basic usage for ResolvedObject type
@@ -56,29 +55,29 @@ describe('utils', () => {
             age: 30
         };
 
-        expect(obj).to.have.property("name");
-        expect(obj).to.have.property("age");
-        expect(obj.name).to.equal('John');
-        expect(obj.age).to.equal(30);
+        expect(obj).toHaveProperty("name");
+        expect(obj).toHaveProperty("age");
+        expect(obj.name).toEqual('John');
+        expect(obj.age).toEqual(30);
     });
 
     describe('sortObjectKeys', () => {
         it('should correctly sort keys of an object', async () => {
             const input = {c: 3, b: 2, a: 1};
             const expected = {a: 1, b: 2, c: 3};
-            expect(sortObjectKeys(input)).to.deep.equal(expected);
+            expect(sortObjectKeys(input)).toEqual(expected);
         });
 
         it('should correctly sort keys of a nested object', async () => {
             const input = {c: 3, a: 1, b: {d: 4, c: 3}};
             const expected = {a: 1, b: {c: 3, d: 4}, c: 3};
-            expect(sortObjectKeys(input)).to.deep.equal(expected);
+            expect(sortObjectKeys(input)).toEqual(expected);
         });
 
         it('should handle arrays correctly', async () => {
             const input = {b: [3, 2, 1], a: [1, 3, 2]};
             const expected = {a: [1, 3, 2], b: [3, 2, 1]};
-            expect(sortObjectKeys(input)).to.deep.equal(expected);
+            expect(sortObjectKeys(input)).toEqual(expected);
         });
     });
 
@@ -86,7 +85,7 @@ describe('utils', () => {
         it('should generate consistent hash keys for objects', async () => {
             const obj1 = {a: 1, b: 2};
             const obj2 = {b: 2, a: 1};
-            expect(objectToHashKey(obj1)).to.equal(objectToHashKey(obj2));
+            expect(objectToHashKey(obj1)).toEqual(objectToHashKey(obj2));
         });
     });
 
@@ -94,7 +93,7 @@ describe('utils', () => {
         it('should generate a hash key from a string', async () => {
             const input = "test string";
             const hashKey = stringToHashKey(input);
-            expect(hashKey).to.be.a('string');
+            expect(typeof hashKey).toBe('string');
             // Additional checks can be made based on the expected properties of the hash
         });
     });

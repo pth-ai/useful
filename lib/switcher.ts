@@ -2,7 +2,7 @@ import {Immutable} from "./immutableUtils";
 import {TypePredicate} from "./utils";
 
 // Type definition for a predicate function
-type TypeObject = { type: string } | string;
+type TypeObject = { type: string } | string | undefined;
 
 // Utility type to extract the 'type' field values from a type
 export type TypeValues<T> = T extends { type: infer U } ? U : never;
@@ -179,7 +179,7 @@ export class Switcher<T, CTX = undefined, OUT = never, REMT extends T | {} = T, 
         if (typeof typeOrPredicate === "string") {
             const predicate = (arg: TypeObject) => {
                 if (typeof arg === 'string') return arg === typeOrPredicate;
-                return 'type' in arg && arg.type === typeOrPredicate;
+                return !!arg && 'type' in arg && arg.type === typeOrPredicate;
             };
             this.cases.push({type: 'func-predicate', predicate, callback});
         } else if (Array.isArray(typeOrPredicate)) {
@@ -209,7 +209,7 @@ export class Switcher<T, CTX = undefined, OUT = never, REMT extends T | {} = T, 
             if (typeof arg === 'string') {
                 return arg.startsWith(prefix);
             }
-            return 'type' in arg && typeof arg.type === 'string' && arg.type.startsWith(prefix);
+            return !!arg && 'type' in arg && typeof arg.type === 'string' && arg.type.startsWith(prefix);
         };
         this.cases.push({type: 'type-predicate', predicate, callback: callback as any});
         return this as any;
@@ -251,7 +251,9 @@ export class Switcher<T, CTX = undefined, OUT = never, REMT extends T | {} = T, 
                 return caseItem.callback(arg, context ?? {} as any);
             } else if (caseItem.type === 'func-predicate' && hasTypeProperty(arg) && caseItem.predicate(arg)) {
                 return caseItem.callback(arg, context ?? {} as any);
-            } else if (caseItem.type === 'func-predicate' && typeof arg === 'string' && caseItem.predicate(arg)) {
+            } else if (caseItem.type === 'func-predicate' && (typeof arg === 'string') && caseItem.predicate(arg)) {
+                return caseItem.callback(arg, context ?? {} as any);
+            } else if (caseItem.type === 'func-predicate' && (typeof arg === 'undefined') && caseItem.predicate(undefined)) {
                 return caseItem.callback(arg, context ?? {} as any);
             }
         }

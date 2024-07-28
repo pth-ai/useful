@@ -10,6 +10,7 @@
     "rootDir": ".",
     "allowJs": true,
     "strictNullChecks": true,
+    "esModuleInterop": true,
     "typeRoots": [
       "node_modules/@types"
     ],

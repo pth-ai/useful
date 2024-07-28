@@ -1,4 +1,3 @@
-import {expect} from "chai";
 import {
     asImmutable, asMutable, asMutableCopy, editImmutable,
     mapDelete, mapSet, setAdd, setDelete, toMutableSet, toReadOnly, toReadOnlySet
@@ -12,8 +11,8 @@ describe('ImmutableUtils', () => {
         const immutableObj = asImmutable(obj);
         const mutableObj = asMutable(immutableObj);
 
-        expect(mutableObj).to.have.property("name");
-        expect(mutableObj.name).to.equal("John");
+        expect(mutableObj).toHaveProperty("name");
+        expect(mutableObj.name).toEqual("John");
     });
 
     it('should modify an immutable object', async () => {
@@ -23,8 +22,8 @@ describe('ImmutableUtils', () => {
             o.name = "Jane";
         });
 
-        expect(modifiedObj).to.have.property("name");
-        expect(modifiedObj.name).to.equal("Jane");
+        expect(modifiedObj).toHaveProperty("name");
+        expect(modifiedObj.name).toEqual("Jane");
     });
 
     // Advanced compilation cases
@@ -42,10 +41,10 @@ describe('ImmutableUtils', () => {
         mutableObj.person.name = "Jane";
         mutableObj.person.address.city = "Los Angeles";
 
-        expect(mutableObj.person).to.have.property("name");
-        expect(mutableObj.person.name).to.equal("Jane");
-        expect(mutableObj.person.address).to.have.property("city");
-        expect(mutableObj.person.address.city).to.equal("Los Angeles");
+        expect(mutableObj.person).toHaveProperty("name");
+        expect(mutableObj.person.name).toEqual("Jane");
+        expect(mutableObj.person.address).toHaveProperty("city");
+        expect(mutableObj.person.address.city).toEqual("Los Angeles");
     });
 
     it('should handle ReadonlyMap and ReadonlySet', async () => {
@@ -58,10 +57,10 @@ describe('ImmutableUtils', () => {
         const newSet = setAdd(set, "new item");
         const deletedSet = setDelete(newSet, "new item");
 
-        expect(newMap.get("key")).to.equal("new value");
-        expect(deletedMap.has("key")).to.equal(false);
-        expect(newSet.has("new item")).to.equal(true);
-        expect(deletedSet.has("new item")).to.equal(false);
+        expect(newMap.get("key")).toEqual("new value");
+        expect(deletedMap.has("key")).toEqual(false);
+        expect(newSet.has("new item")).toEqual(true);
+        expect(deletedSet.has("new item")).toEqual(false);
     });
 
     it('should convert ReadonlySet to mutable', async () => {
@@ -70,8 +69,8 @@ describe('ImmutableUtils', () => {
 
         mutableSet.add("new item");
 
-        expect(mutableSet.has("item")).to.equal(true);
-        expect(mutableSet.has("new item")).to.equal(true);
+        expect(mutableSet.has("item")).toEqual(true);
+        expect(mutableSet.has("new item")).toEqual(true);
     });
 
     it('should store and call a function from an immutable object', async () => {
@@ -80,7 +79,7 @@ describe('ImmutableUtils', () => {
 
         const greeting = obj.greet("John");
 
-        expect(greeting).to.equal("Hello, John!");
+        expect(greeting).toEqual("Hello, John!");
     });
 
     it('should iterate over an immutable array', async () => {
@@ -92,7 +91,7 @@ describe('ImmutableUtils', () => {
             sum += num;
         }
 
-        expect(sum).to.equal(15);
+        expect(sum).toEqual(15);
     });
 
     it('should handle nested immutable arrays', async () => {
@@ -110,7 +109,7 @@ describe('ImmutableUtils', () => {
             }
         }
 
-        expect(sum).to.equal(45);
+        expect(sum).toEqual(45);
     });
 
     it('should handle mixed nested immutable structures', async () => {
@@ -126,7 +125,7 @@ describe('ImmutableUtils', () => {
 
         const names = data.getNames();
 
-        expect(names).to.include.members(["John", "Jane"]);
+        expect(names).toEqual(["John", "Jane"]);
     });
 
 });

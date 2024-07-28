@@ -88,6 +88,7 @@ export const isTruthy = <T>(t: T | null | undefined | "" | false): t is T => t !
 type NonFalsey<T> = T extends false ? never : T;
 
 export type RequiredKeyValue<T, K extends keyof T> = T & { [K in keyof T]-?: T[K] };
+export type RequiredKeys<T> = T & { [K in keyof T]-?: T[K] };
 
 export const hasKeyDefinedCurried = <T, K extends string & keyof T>(key: K) => (t: T): t is RequiredKeyValue<T, K> =>
     hasKeyDefined(t, key);

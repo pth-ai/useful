@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import {retryPromise} from "../lib";
 
 describe('RetryPromise Functionality', () => {
@@ -6,7 +5,7 @@ describe('RetryPromise Functionality', () => {
     it('should successfully resolve on first attempt', async () => {
         const action = () => Promise.resolve("success");
         const result = await retryPromise("testAction", action, 3);
-        expect(result).to.equal("success");
+        expect(result).toEqual("success");
     });
 
     it('should retry until successful', async () => {
@@ -20,7 +19,7 @@ describe('RetryPromise Functionality', () => {
             }
         });
         const result = await retryPromise("retryUntilSuccess", action, 3);
-        expect(result).to.equal("success");
+        expect(result).toEqual("success");
     });
 
     it('should throw after exceeding max retries', async () => {
@@ -29,7 +28,7 @@ describe('RetryPromise Functionality', () => {
             await retryPromise("exceedMaxRetries", action, 2);
             throw new Error("Expected to throw after max retries but did not");
         } catch (e: any) {
-            expect(e.message).to.equal("failed");
+            expect(e.message).toEqual("failed");
         }
     });
 
@@ -37,7 +36,7 @@ describe('RetryPromise Functionality', () => {
         const action = () => Promise.reject(new Error("failed"));
         const lastFallback = () => Promise.resolve("fallback success");
         const result = await retryPromise("withFallback", action, 2, undefined, lastFallback);
-        expect(result).to.equal("fallback success");
+        expect(result).toEqual("fallback success");
     });
 
     it('should not retry if ignoreErrors returns true', async () => {
@@ -50,8 +49,8 @@ describe('RetryPromise Functionality', () => {
             await retryPromise("ignoreError", action, 3, (e) => e.message === "ignore this error");
             throw new Error("Expected to throw immediately but did not");
         } catch (e: any) {
-            expect(e.message).to.equal("ignore this error");
-            expect(attemptCounter).to.equal(1); // No retries should have occurred
+            expect(e.message).toEqual("ignore this error");
+            expect(attemptCounter).toEqual(1); // No retries should have occurred
         }
     });
 
