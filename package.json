@@ -2,6 +2,7 @@
   "name": "useful",
   "version": "0.8.2",
   "description": "a collection of robust utilities that make your development smoother and more efficient",
+  "repository": "git@github.com:pth-ai/useful.git",
   "author": "Roman Landenband",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -10,18 +11,6 @@
     "clean:build": "rimraf dist",
     "build": "yarn clean:build && tsc --outDir dist/",
     "test": "NODE_ENV=test jest"
-  },
-  "keywords": [
-    "String",
-    "Strings",
-    "String utils",
-    "utils",
-    "uilities",
-    "TypeScript"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pth-ai/useful"
   },
   "dependencies": {
     "spark-md5": "^3.0.2"
