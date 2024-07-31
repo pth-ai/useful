@@ -7,7 +7,7 @@
     "moduleResolution": "NodeNext",
     "noImplicitAny": true,
     "outDir": "dist",
-    "rootDir": ".",
+    "rootDir": "lib",
     "allowJs": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
@@ -18,6 +18,9 @@
       "DOM"
     ]
   },
+  "include": [
+    "lib/**/*"
+  ],
   "exclude": [
     "dist",
     "node_modules",
