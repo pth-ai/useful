@@ -87,7 +87,7 @@ export const isTruthy = <T>(t: T | null | undefined | "" | false): t is T => t !
 
 type NonFalsey<T> = T extends false ? never : T;
 
-export type RequiredKeyValue<T, K extends keyof T> = T & { [K in keyof T]-?: T[K] };
+export type RequiredKeyValue<T, K extends keyof T> = T & { [k in K]-?: T[K] };
 export type RequiredKeys<T> = T & { [K in keyof T]-?: T[K] };
 
 export const hasKeyDefinedCurried = <T, K extends string & keyof T>(key: K) => (t: T): t is RequiredKeyValue<T, K> =>
@@ -203,7 +203,7 @@ export const stringToHashKey = (input: string, full?: boolean) => {
 const toBinary = (string: string) => {
     const codeUnits = Uint16Array.from(
         {length: string.length},
-        (element, index) => string.charCodeAt(index)
+        (_element, index) => string.charCodeAt(index)
     );
     const charCodes = new Uint8Array(codeUnits.buffer);
 

@@ -41,7 +41,7 @@ describe('RetryPromise Functionality', () => {
 
     it('should not retry if ignoreErrors returns true', async () => {
         let attemptCounter = 0;
-        const action = () => new Promise((resolve, reject) => {
+        const action = () => new Promise((_resolve, reject) => {
             attemptCounter++;
             reject(new Error("ignore this error"));
         });

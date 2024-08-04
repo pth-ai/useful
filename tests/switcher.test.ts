@@ -185,8 +185,8 @@ describe('Switcher', () => {
 
         // Use the Switcher with the property predicates
         const builder = new Switcher<Shape>()
-            .when(isCircle, user => `it's a circle!`)
-            .when(isEitherOfType(isSquare, isTriangle), user => `It's either a square or a triangle!`)
+            .when(isCircle, () => `it's a circle!`)
+            .when(isEitherOfType(isSquare, isTriangle), () => `It's either a square or a triangle!`)
             .checkExhaustive();
 
         // Execute tests

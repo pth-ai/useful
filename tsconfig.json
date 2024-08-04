@@ -1,31 +1,3 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
-  "compilerOptions": {
-    "declaration": true,
-    "target": "es6",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "noImplicitAny": true,
-    "outDir": "dist",
-    "rootDir": "lib",
-    "allowJs": true,
-    "strictNullChecks": true,
-    "esModuleInterop": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "DOM"
-    ]
-  },
-  "include": [
-    "lib/**/*",
-    "index.ts"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules",
-    "example",
-    "tests"
-  ]
+  "extends": "./tsconfig.esm.json"
 }

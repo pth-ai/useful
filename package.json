@@ -1,23 +1,33 @@
 {
   "name": "useful",
-  "version": "0.7.24",
+  "version": "0.8.0",
   "description": "a collection of robust utilities that make your development smoother and more efficient",
   "repository": "git@github.com:pth-ai/useful.git",
   "author": "Roman Landenband",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/esm/index.d.ts"
+    }
+  },
   "scripts": {
     "clean:build": "rimraf dist",
-    "build": "yarn clean:build && tsc --outDir dist/",
-    "test": "NODE_ENV=test jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build": "yarn clean:build && npm run build:esm && npm run build:cjs"
   },
   "dependencies": {
     "spark-md5": "^3.0.2"
   },
   "devDependencies": {
     "@sinonjs/fake-timers": "^11.2.2",
-    "@tsconfig/node18": "^18.2.4",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.13",
     "@types/sinonjs__fake-timers": "^8.1.5",
