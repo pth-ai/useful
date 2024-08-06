@@ -6,22 +6,19 @@
   "author": "Roman Landenband",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/esm/index.d.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
     "clean:build": "rimraf dist",
     "test": "NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest",
-    "build:esm": "tsc -p tsconfig.esm.json",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build": "yarn clean:build && npm run build:esm && npm run build:cjs"
+    "build:esm": "tsc -p tsconfig.json",
+    "build": "yarn clean:build && npm run build:esm"
   },
   "dependencies": {
     "spark-md5": "^3.0.2"
