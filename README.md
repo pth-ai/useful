@@ -8,7 +8,7 @@ Enhance your TypeScript experience with `useful` - a collection of robust utilit
 
 ## 🌟 Features
 
-- Strongly-typed utilities designed specifically for TypeScript.
+- Strongly-typed utilities designed specific1ally for TypeScript.
 - Comprehensive documentation for each utility.
 - Built with best practices in mind.
 - Continuously updated and maintained.
