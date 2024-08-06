@@ -4006,6 +4006,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tslib@npm:^2.6.3":
+  version: 2.6.3
+  resolution: "tslib@npm:2.6.3"
+  checksum: 10c0/2598aef53d9dbe711af75522464b2104724d6467b26a60f2bdac8297d2b5f1f6b86a71f61717384aa8fd897240467aaa7bcc36a0700a0faf751293d1331db39a
+  languageName: node
+  linkType: hard
+
 "type-detect@npm:4.0.8":
   version: 4.0.8
   resolution: "type-detect@npm:4.0.8"
@@ -4097,6 +4104,7 @@ __metadata:
     spark-md5: "npm:^3.0.2"
     ts-jest: "npm:^29.2.4"
     ts-node: "npm:^10.9.2"
+    tslib: "npm:^2.6.3"
     typescript: "npm:5.5.4"
   languageName: unknown
   linkType: soft
