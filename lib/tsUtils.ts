@@ -135,7 +135,7 @@ export type Creator<T, Extra extends keyof Omit<T, 'id' | 'createdAt' | 'updated
 export type Updater<T, Extra extends keyof Omit<T, 'id' | 'createdAt' | 'updatedAt'> | never = never> = Omit<T, 'id' | Extra>;
 
 export const listToMap = <Key extends keyof T, T extends object>(list: T[], key: Key): Map<string, T> => {
-    return list.reduce((out, t) => out.set(t[key], t), new Map());
+    return list.reduce((out, t) => out.set(String(t[key]), t), new Map());
 }
 
 export const groupBy = <Key extends keyof T & string, T extends object & { readonly [key in Key]: string | string[] }>(list: T[], key: Key): Map<string, T[]> =>
