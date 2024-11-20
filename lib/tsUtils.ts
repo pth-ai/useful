@@ -192,7 +192,7 @@ export function sortObjectKeys(obj: object): any {
 }
 
 export const objectToHashKey = (input: object, full?: boolean) => {
-    const objSortedKeys = sortObjectKeys(input);
+    const objSortedKeys = Array.isArray(input) ? input : sortObjectKeys(input);
     return stringToHashKey(JSON.stringify(objSortedKeys), full)
 };
 
