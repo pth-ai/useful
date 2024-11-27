@@ -1,6 +1,6 @@
 {
   "name": "useful",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "a collection of robust utilities that make your development smoother and more efficient",
   "repository": "git@github.com:pth-ai/useful.git",
   "author": "Roman Landenband",
