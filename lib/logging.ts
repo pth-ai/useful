@@ -2,6 +2,9 @@ import {hasOwnProperty} from "./tsUtils";
 import * as uuid from "uuid";
 import path from "path";
 import {switcher} from "./switcher";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 
 interface LogEntry {
     level: 'info' | 'debug' | 'error' | 'warm' | string;
