@@ -38,6 +38,7 @@
     "@types/node": "^20.14.13",
     "@types/sinonjs__fake-timers": "^8.1.5",
     "@types/spark-md5": "^3.0.4",
+    "@types/uuid": "^9.0.1",
     "jest": "^29.7.0",
     "rimraf": "^5.0.10",
     "rollup": "^4.20.0",
