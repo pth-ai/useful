@@ -26,7 +26,8 @@
     "build": "yarn clean:build && rollup -c"
   },
   "dependencies": {
-    "spark-md5": "^3.0.2"
+    "spark-md5": "^3.0.2",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^26.0.1",
