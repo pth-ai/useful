@@ -1,10 +1,39 @@
 import {hasOwnProperty} from "./tsUtils";
 import * as uuid from "uuid";
-import path from "path";
 import {switcher} from "./switcher";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+// Helper function to determine the environment
+const isNode = typeof process !== 'undefined' &&
+    process.versions != null &&
+    process.versions.node != null;
+
+// Conditional imports and environment-specific code
+let __filename: string;
+let path: any;
+
+if (isNode) {
+    // Node.js environment
+    const {fileURLToPath} = await import('url');
+    path = await import('path');
+    __filename = fileURLToPath(import.meta.url);
+} else {
+    // Browser environment
+    __filename = '';
+    path = {
+        basename: (path: string, ext?: string) => {
+            const parts = path.split('/');
+            const filename = parts[parts.length - 1];
+            if (ext && filename.endsWith(ext)) {
+                return filename.slice(0, -ext.length);
+            }
+            return filename;
+        },
+        extname: (path: string) => {
+            const parts = path.split('.');
+            return parts.length > 1 ? '.' + parts[parts.length - 1] : '';
+        }
+    };
+}
 
 interface LogEntry {
     level: 'info' | 'debug' | 'error' | 'warm' | string;
@@ -71,29 +100,34 @@ export const logger: Logger = globalLogger;
 const serverId = uuid.v4().substring(0, 5);
 
 export const createLoggerForFile = () => {
-    // Capture the Error stack
-    const err = new Error();
-    const stack = err.stack || '';
+    if (isNode) {
+        // Node.js specific stack trace handling
+        const err = new Error();
+        const stack = err.stack || '';
 
-    // Split the stack into lines and find the caller
-    const stackLines = stack.split('\n');
-    let callerFileName = '';
+        // Split the stack into lines and find the caller
+        const stackLines = stack.split('\n');
+        let callerFileName = '';
 
-    // Look for the first occurrence in the stack where a file in this project is mentioned
-    for (let i = 2; i < stackLines.length; i++) {
-        if (stackLines[i].indexOf(__filename) === -1) {
-            // Extract file name using regular expression
-            const matches = /at\s+(?:.*?\s+)?(?:\(?(.*?):\d+:\d+\)?)/.exec(stackLines[i]);
-            if (matches && matches[1]) {
-                callerFileName = matches[1];
-                break;
+        // Look for the first occurrence in the stack where a file in this project is mentioned
+        for (let i = 2; i < stackLines.length; i++) {
+            if (stackLines[i].indexOf(__filename) === -1) {
+                // Extract file name using regular expression
+                const matches = /at\s+(?:.*?\s+)?(?:\(?(.*?):\d+:\d+\)?)/.exec(stackLines[i]);
+                if (matches && matches[1]) {
+                    callerFileName = matches[1];
+                    break;
+                }
             }
         }
-    }
 
-    // Return the filename without its extension
-    const filename = path.basename(callerFileName, path.extname(callerFileName));
-    return new Logging(filename);
+        // Return the filename without its extension
+        const filename = path.basename(callerFileName, path.extname(callerFileName));
+        return new Logging(filename);
+    } else {
+        // Browser environment - return a default or derived component name
+        return new Logging('browser-logger');
+    }
 }
 
 
@@ -104,7 +138,9 @@ export class Logging {
 
     constructor(component: string, baseMeta: {} = {}, private logger: Logger = globalLogger) {
         this.component = component;
-        this.appVersion = process.env.APP_VERSION || 'dev';
+        this.appVersion = isNode
+            ? (process.env.APP_VERSION || 'dev')
+            : 'browser';
         this.baseMeta = baseMeta;
     }
 
