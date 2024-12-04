@@ -24,18 +24,24 @@ let pathUtils: any = {
     }
 };
 
-// Conditional initialization for Node.js
-if (isNode) {
-    try {
-        // Using require instead of import for Node.js modules
-        const url = require('url');
-        const path = require('path');
-        __filename = url.fileURLToPath(import.meta.url);
-        pathUtils = path;
-    } catch (e) {
-        console.warn('Failed to load Node.js modules:', e);
+// Function to initialize Node.js specific modules
+const initializeNodeModules = async () => {
+    if (isNode) {
+        try {
+            const [{fileURLToPath}, path] = await Promise.all([
+                import('url'),
+                import('path')
+            ]);
+            __filename = fileURLToPath(import.meta.url);
+            pathUtils = path;
+        } catch (e) {
+            console.warn('Failed to load Node.js modules:', e);
+        }
     }
-}
+};
+
+// Initialize immediately
+initializeNodeModules().catch(console.error);
 
 interface LogEntry {
     level: 'info' | 'debug' | 'error' | 'warm' | string;
