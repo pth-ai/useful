@@ -7,32 +7,34 @@ const isNode = typeof process !== 'undefined' &&
     process.versions != null &&
     process.versions.node != null;
 
-// Conditional imports and environment-specific code
-let __filename: string;
-let path: any;
-
-if (isNode) {
-    // Node.js environment
-    const {fileURLToPath} = await import('url');
-    path = await import('path');
-    __filename = fileURLToPath(import.meta.url);
-} else {
-    // Browser environment
-    __filename = '';
-    path = {
-        basename: (path: string, ext?: string) => {
-            const parts = path.split('/');
-            const filename = parts[parts.length - 1];
-            if (ext && filename.endsWith(ext)) {
-                return filename.slice(0, -ext.length);
-            }
-            return filename;
-        },
-        extname: (path: string) => {
-            const parts = path.split('.');
-            return parts.length > 1 ? '.' + parts[parts.length - 1] : '';
+// Initialize variables
+let __filename: string = '';
+let pathUtils: any = {
+    basename: (path: string, ext?: string) => {
+        const parts = path.split('/');
+        const filename = parts[parts.length - 1];
+        if (ext && filename.endsWith(ext)) {
+            return filename.slice(0, -ext.length);
         }
-    };
+        return filename;
+    },
+    extname: (path: string) => {
+        const parts = path.split('.');
+        return parts.length > 1 ? '.' + parts[parts.length - 1] : '';
+    }
+};
+
+// Conditional initialization for Node.js
+if (isNode) {
+    try {
+        // Using require instead of import for Node.js modules
+        const url = require('url');
+        const path = require('path');
+        __filename = url.fileURLToPath(import.meta.url);
+        pathUtils = path;
+    } catch (e) {
+        console.warn('Failed to load Node.js modules:', e);
+    }
 }
 
 interface LogEntry {
@@ -121,8 +123,7 @@ export const createLoggerForFile = () => {
             }
         }
 
-        // Return the filename without its extension
-        const filename = path.basename(callerFileName, path.extname(callerFileName));
+        const filename = pathUtils.basename(callerFileName, pathUtils.extname(callerFileName));
         return new Logging(filename);
     } else {
         // Browser environment - return a default or derived component name
