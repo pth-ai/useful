@@ -1,5 +1,6 @@
 import SparkMD5 from "spark-md5";
-import {logger} from "./logging";
+import {getGlobalLogger} from "./logging";
+
 
 export function hasOwnProperty<X extends object,
     Y extends PropertyKey>(obj: X, prop: Y): obj is Extract<X, Record<Y, unknown>> {
@@ -41,11 +42,11 @@ const _retryPromise = async <T>(name: string, action: () => Promise<T>, maxRetri
         if (ignoreErrors && ignoreErrors(e)) {
             throw e;
         } else if (attempt >= maxRetries) {
-            logger.error(`max retries reached [${name}] error=[${String(e)}] (original error=[${String(e)}])`, e, {name});
+            getGlobalLogger().error(`max retries reached [${name}] error=[${String(e)}] (original error=[${String(e)}])`, e, {name});
             throw e;
         } else {
             return await delayedPromise(300 + getRandomInt(300) * (attempt + 1), () => {
-                logger.debug(`_retryPromise [${name}] attempt [${attempt}] retrying..`);
+                getGlobalLogger().debug(`_retryPromise [${name}] attempt [${attempt}] retrying..`);
                 return _retryPromise(name,
                     lastFallback && maxRetries >= attempt + 1 ? lastFallback : action,
                     maxRetries, attempt + 1, ignoreErrors, lastFallback);
@@ -76,7 +77,7 @@ export const timePromise = <T>(name: string, op: () => Promise<T>): Promise<T> =
     return op()
         .then(result => {
             const endTime = new Date().getTime();
-            logger.debug(`operation [${name}] took [${endTime - startTime}]ms`);
+            getGlobalLogger().debug(`operation [${name}] took [${endTime - startTime}]ms`);
             return result;
         });
 };
