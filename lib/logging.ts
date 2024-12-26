@@ -158,7 +158,8 @@ export class Logging {
             ...logOpts,
             meta: enhandedMeta,
         })
-        this.logger.setLastId(logId);
+
+        this.logger.setLastId?.(logId);
 
         return this.logger;
     }
