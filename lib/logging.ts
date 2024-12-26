@@ -154,12 +154,12 @@ export class Logging {
     private doLog = (logOpts: LogEntry & { meta: object }): CTLogger => {
         const logId = uuid.v4().substring(0, 5);
         const enhandedMeta = {...logOpts.meta, logId};
-        this.logger.log({
+        this.logger?.log({
             ...logOpts,
             meta: enhandedMeta,
         })
 
-        this.logger.setLastId?.(logId);
+        this.logger?.setLastId?.(logId);
 
         return this.logger;
     }
