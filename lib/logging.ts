@@ -102,8 +102,7 @@ export const setLogger = (newLogger: Logger) => {
     globalLogger = newLogger;
 };
 
-// Export a logger that delegates to the current global logger.
-export const logger: Logger = globalLogger;
+export const getGlobalLogger = () => globalLogger;
 
 const serverId = uuid.v4().substring(0, 5);
 
@@ -143,7 +142,7 @@ export class Logging {
     appVersion: string;
     private baseMeta: {};
 
-    constructor(component: string, baseMeta: {} = {}, private logger: Logger = globalLogger) {
+    constructor(component: string, baseMeta: {} = {}, private logger?: Logger) {
         this.component = component;
         this.appVersion = isNode
             ? (process.env.APP_VERSION || 'dev')
@@ -154,25 +153,26 @@ export class Logging {
     private doLog = (logOpts: LogEntry & { meta: object }): CTLogger => {
         const logId = uuid.v4().substring(0, 5);
         const enhandedMeta = {...logOpts.meta, logId};
-        this.logger?.log({
+        const logger = (this.logger ?? getGlobalLogger());
+        logger.log({
             ...logOpts,
             meta: enhandedMeta,
         })
 
-        this.logger?.setLastId?.(logId);
+        logger?.setLastId?.(logId);
 
-        return this.logger;
+        return logger;
     }
 
     public info = (message: string, meta: object = {}) =>
-        logger.log({
+        (this.logger ?? getGlobalLogger()).log({
             level: 'info',
             message,
             meta: this.genMeta(meta),
         })
 
     public debug = (message: string, meta: object = {}, isEnabled: boolean = false) =>
-        isEnabled && logger.log({
+        isEnabled && (this.logger ?? getGlobalLogger()).log({
             level: 'debug',
             message,
             meta: this.genMeta(meta)
@@ -194,7 +194,7 @@ export class Logging {
         })
 
     public warn = (message: string, meta: object = {}) =>
-        logger.log({
+        (this.logger ?? getGlobalLogger()).log({
             level: 'warn',
             message,
             meta: this.genMeta(meta)
