@@ -150,9 +150,21 @@ export class Logging {
         this.baseMeta = baseMeta;
     }
 
-    private doLog = (logOpts: LogEntry & { meta: object }): CTLogger => {
+    public getAsLogger = (): Logger => {
+        return {
+            debug: this.debug,
+            info: this.info,
+            warn: this.warn,
+            error: this.error,
+            log: this.doLog,
+            getLastId: this.logger?.getLastId,
+            setLastId: this.logger?.setLastId,
+        } as Logger;
+    }
+
+    private doLog = (logOpts: LogEntry & { meta?: object }): CTLogger => {
         const logId = uuid.v4().substring(0, 5);
-        const enhandedMeta = {...logOpts.meta, logId};
+        const enhandedMeta = {...(logOpts.meta ?? {}), logId};
         const logger = (this.logger ?? getGlobalLogger());
         logger.log({
             ...logOpts,
