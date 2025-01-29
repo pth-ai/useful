@@ -271,3 +271,11 @@ export async function executeInSync<T>(operations: (() => Promise<T>)[]): Promis
     }
     return results;
 }
+
+export function omit<T extends Record<string, any>, K extends keyof T>(
+    obj: T,
+    key: K
+): Omit<T, K> {
+    const { [key]: _, ...rest } = obj;
+    return rest;
+}
