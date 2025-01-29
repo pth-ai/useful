@@ -247,14 +247,20 @@ export class Switcher<T, CTX = undefined, OUT = never, REMT extends T | {} = T, 
     // Implementation
     public exec(arg: T, context?: CTX): OUT {
         for (const caseItem of this.cases) {
-            if (caseItem.type === 'type-predicate' && caseItem.predicate(arg)) {
-                return caseItem.callback(arg, context ?? {} as any);
-            } else if (caseItem.type === 'func-predicate' && hasTypeProperty(arg) && caseItem.predicate(arg)) {
-                return caseItem.callback(arg, context ?? {} as any);
-            } else if (caseItem.type === 'func-predicate' && (typeof arg === 'string') && caseItem.predicate(arg)) {
-                return caseItem.callback(arg, context ?? {} as any);
-            } else if (caseItem.type === 'func-predicate' && (typeof arg === 'undefined') && caseItem.predicate(undefined)) {
-                return caseItem.callback(arg, context ?? {} as any);
+            if (caseItem.type === 'type-predicate') {
+                if (caseItem.predicate(arg)) {
+                    return caseItem.callback(arg, context ?? {} as any);
+                }
+            } else if (caseItem.type === 'func-predicate') {
+                if (hasTypeProperty(arg) && caseItem.predicate(arg)) {
+                    return caseItem.callback(arg, context ?? {} as any);
+                } else if (typeof arg === 'string' && caseItem.predicate(arg)) {
+                    return caseItem.callback(arg, context ?? {} as any);
+                } else if (typeof arg === 'undefined' && caseItem.predicate(undefined)) {
+                    return caseItem.callback(arg, context ?? {} as any);
+                } else if (caseItem.predicate(arg as any)) { // Add this case
+                    return caseItem.callback(arg, context ?? {} as any);
+                }
             }
         }
 

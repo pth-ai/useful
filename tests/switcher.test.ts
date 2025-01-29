@@ -173,9 +173,9 @@ describe('Switcher', () => {
     });
 
     it('should support an either type', async () => {
-        type Circle = {type: 'circle'}
-        type Square = {type: 'square'}
-        type Triangle = {type: 'triangle'}
+        type Circle = { type: 'circle' }
+        type Square = { type: 'square' }
+        type Triangle = { type: 'triangle' }
         type Shape = Circle | Square | Triangle;
 
         // Create property predicates
@@ -260,9 +260,26 @@ describe('Switcher', () => {
     });
 
 
+    it('should allow fallback when using guard', async () => {
+
+        type Options = { name: "first" } | { name: "second" }
+
+        const firstGuard = createTypeGuard<Options>()('name', 'first');
+
+        const basicSwitcher = switcher<Options>()
+            .when(firstGuard, _ => '1')
+            .fallback(_ => '2')
+            .checkExhaustive()
+
+        // Execute tests
+        expect(basicSwitcher.exec({name: "first"})).toEqual('1');
+        expect(basicSwitcher.exec({name: "second"})).toEqual('2');
+    });
+
+
     it('should correctly handle a union of prefixed types', async () => {
         // Define a union of type strings
-        type MyU = {type: "pref1-type1" } | {type: "pref1-type2" } | {type: "pref2-type" } | {type: "pref3-type" };
+        type MyU = { type: "pref1-type1" } | { type: "pref1-type2" } | { type: "pref2-type" } | { type: "pref3-type" };
 
         // Create a new Switcher instance for the union type
         const builder = switcher<MyU>()
@@ -281,7 +298,7 @@ describe('Switcher', () => {
 
     it('should correctly handle a union of prefixed types using guard', async () => {
         // Define a union of type strings
-        type MyU = {type: "pref1-type1" } | {type: "pref1-type2" } | {type: "pref2-type" } | {type: "pref3-type" };
+        type MyU = { type: "pref1-type1" } | { type: "pref1-type2" } | { type: "pref2-type" } | { type: "pref3-type" };
 
         const pref1Prefix = createPrefixTypeGuard<MyU>()('type', 'pref1');
 
@@ -304,7 +321,7 @@ describe('Switcher', () => {
         // Define a union of type strings
         type MyU = "pref1-type1" | "pref1-type2" | "pref2-type" | "pref3-type";
 
-        const pref1Prefix = createPrefixTypeValueGuard<MyU>()( 'pref1');
+        const pref1Prefix = createPrefixTypeValueGuard<MyU>()('pref1');
 
         // Create a new Switcher instance for the union type
         const builder = switcher<MyU>()
