@@ -18,7 +18,7 @@ export default {
     {
       file: 'dist/index.umd.js',
       format: 'umd',
-      name: 'YourLibraryName',
+      name: 'useful',
       sourcemap: true,
     },
   ],
