@@ -31,24 +31,24 @@
   },
   "dependencies": {
     "spark-md5": "^3.0.2",
-    "uuid": "^9.0.1"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
     "@sinonjs/fake-timers": "^11.2.2",
-    "@types/jest": "^29.5.12",
-    "@types/node": "^20.14.13",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.15.29",
     "@types/sinonjs__fake-timers": "^8.1.5",
-    "@types/spark-md5": "^3.0.4",
-    "@types/uuid": "^9.0.1",
+    "@types/spark-md5": "^3.0.5",
+    "@types/uuid": "^9.0.8",
     "jest": "^29.7.0",
-    "rimraf": "^5.0.10",
-    "rollup": "^4.20.0",
-    "ts-jest": "^29.2.4",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.41.1",
+    "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
-    "tslib": "^2.6.3",
-    "typescript": "5.6.3"
+    "tslib": "^2.8.1",
+    "typescript": "5.8.3"
   }
 }
