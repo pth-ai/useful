@@ -6,13 +6,19 @@ export default {
   input: 'index.ts',
   output: [
     {
-      file: 'dist/index.js',
+      file: 'dist/index.cjs.js',
       format: 'cjs',
       sourcemap: true,
     },
     {
       file: 'dist/index.esm.js',
-      format: 'es',
+      format: 'esm',
+      sourcemap: true,
+    },
+    {
+      file: 'dist/index.umd.js',
+      format: 'umd',
+      name: 'YourLibraryName',
       sourcemap: true,
     },
   ],
