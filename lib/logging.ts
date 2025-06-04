@@ -2,14 +2,12 @@ import {hasOwnProperty} from "./tsUtils";
 import * as uuid from "uuid";
 import {switcher} from "./switcher";
 
-// Helper function to determine the environment
 const isNode = typeof process !== 'undefined' &&
     process.versions != null &&
     process.versions.node != null;
 
 const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
 
-// --- ANSI Colors for Node.js (only if TTY) ---
 const TTY_COLORS = {
     RESET: "\x1b[0m",
     BRIGHT: "\x1b[1m",
@@ -49,11 +47,10 @@ function colorizeNode(text: string, color: string): string {
     return IS_TTY ? `${color}${text}${TTY_COLORS.RESET}` : text;
 }
 
-// Initialize variables
-let __filename_logging: string = ''; // Renamed to avoid conflict if user also has __filename
-let pathUtils: any = { // Basic fallback for browser or if Node modules fail to load
+let __filename_logging: string = '';
+let pathUtils: any = {
     basename: (path: string, ext?: string) => {
-        const parts = path.split(/[/\\]/); // Handle both / and \
+        const parts = path.split(/[/\\]/);
         const filename = parts[parts.length - 1];
         if (ext && filename.endsWith(ext)) {
             return filename.slice(0, -ext.length);
@@ -66,7 +63,6 @@ let pathUtils: any = { // Basic fallback for browser or if Node modules fail to 
     }
 };
 
-// Function to initialize Node.js specific modules
 const initializeNodeModules = async () => {
     if (isNode) {
         try {
@@ -74,12 +70,9 @@ const initializeNodeModules = async () => {
                 import('url'),
                 import('path')
             ]);
-            // In ESM, import.meta.url is the standard way to get the current file's URL
             if (typeof import.meta !== 'undefined' && import.meta.url) {
-                 __filename_logging = fileURLToPath(import.meta.url);
+                __filename_logging = fileURLToPath(import.meta.url);
             } else {
-                // Fallback for CJS environments if this module somehow runs there, though less likely with dynamic imports
-                // __filename_logging = __filename; // This __filename is only available in CJS
                 console.warn('Could not determine __filename_logging using import.meta.url. Caller filename resolution might be affected.');
             }
             pathUtils = pathModule;
@@ -89,53 +82,50 @@ const initializeNodeModules = async () => {
     }
 };
 
-// Initialize immediately
 initializeNodeModules().catch(e => console.error("Error initializing logging node modules:", e));
 
 interface LogEntry {
-    level: 'info' | 'debug' | 'error' | 'warn' | string; // 'warn' was 'warm' - assuming typo
+    level: 'info' | 'debug' | 'error' | 'warn' | string;
     message: string;
-    timestamp: string; // Added timestamp
+    timestamp: string;
     [optionName: string]: any;
 }
 
-// CTLogger is an internal type used by Logging class, it might need setLastId
 type CTLogger = Logger & { setLastId?: (lastId: string) => void };
 
 export interface Logger {
     debug: (message: string, meta?: object) => void;
     info: (message: string, meta?: object) => void;
     warn: (message: string, meta?: object) => void;
-    error: (message: string, error?: any, meta?: object) => void; // error can be optional
+    error: (message: string, error?: any, meta?: object) => void;
     log: (entry: LogEntry) => void;
     getLastId: () => string;
     setLastId: (lastId: string) => void;
 }
 
-let lastId = ""; // Global for the basicLogger instance
+let lastId = "";
 
 const basicLogger: Logger & { setLastId: (lastId: string) => void } = {
     log(entry: LogEntry): void {
-        // Ensure meta exists
         const meta = entry.meta || {};
-        // The switcher helps call the right typed method below
         switcher<typeof entry.level>()
             .when('info', () => basicLogger.info(entry.message, meta))
             .when('debug', () => basicLogger.debug(entry.message, meta))
             .when('error', () => basicLogger.error(entry.message, entry['error'], meta))
-            .when('warn', () => basicLogger.warn(entry.message, meta)) // was 'warm'
-            .fallback(() => basicLogger.info(entry.message, meta)) // Default to info
+            .when('warn', () => basicLogger.warn(entry.message, meta))
+            .fallback(() => basicLogger.info(entry.message, meta))
             .checkExhaustive()
             .exec(entry.level);
     },
     debug(message: string, meta?: object): void {
         const timestamp = new Date().toISOString();
+        const stringifiedMeta = meta ? JSON.stringify(meta) : '';
         if (isNode) {
             console.debug(
                 colorizeNode(`[${timestamp}]`, TTY_COLORS.FG.GRAY),
                 colorizeNode('[DEBUG]', TTY_COLORS.FG.MAGENTA),
                 message,
-                meta || ''
+                stringifiedMeta
             );
         } else if (isBrowser) {
             console.debug(
@@ -143,21 +133,22 @@ const basicLogger: Logger & { setLastId: (lastId: string) => void } = {
                 'color: gray',
                 'color: magenta; font-weight: bold;',
                 'color: inherit;',
-                meta || ''
+                stringifiedMeta
             );
         } else {
-            console.debug(`[${timestamp}] [DEBUG]`, message, meta || '');
+            console.debug(`[${timestamp}] [DEBUG]`, message, stringifiedMeta);
         }
     },
     error(message: string, error?: any, meta?: object): void {
         const timestamp = new Date().toISOString();
+        const stringifiedMeta = meta ? JSON.stringify(meta) : '';
         if (isNode) {
             console.error(
                 colorizeNode(`[${timestamp}]`, TTY_COLORS.FG.GRAY),
                 colorizeNode('[ERROR]', TTY_COLORS.BRIGHT + TTY_COLORS.FG.RED),
                 message,
-                ...(error ? [error] : []), // Spread error if it exists
-                meta || ''
+                ...(error ? [error] : []),
+                stringifiedMeta
             );
         } else if (isBrowser) {
             console.error(
@@ -166,20 +157,21 @@ const basicLogger: Logger & { setLastId: (lastId: string) => void } = {
                 'color: red; font-weight: bold;',
                 'color: inherit;',
                 ...(error ? [error] : []),
-                meta || ''
+                stringifiedMeta
             );
         } else {
-            console.error(`[${timestamp}] [ERROR]`, message, ...(error ? [error] : []), meta || '');
+            console.error(`[${timestamp}] [ERROR]`, message, ...(error ? [error] : []), stringifiedMeta);
         }
     },
     info(message: string, meta?: object): void {
         const timestamp = new Date().toISOString();
+        const stringifiedMeta = meta ? JSON.stringify(meta) : '';
         if (isNode) {
             console.info(
                 colorizeNode(`[${timestamp}]`, TTY_COLORS.FG.GRAY),
                 colorizeNode('[INFO]', TTY_COLORS.FG.GREEN),
                 message,
-                meta || ''
+                stringifiedMeta
             );
         } else if (isBrowser) {
             console.info(
@@ -187,31 +179,32 @@ const basicLogger: Logger & { setLastId: (lastId: string) => void } = {
                 'color: gray;',
                 'color: green; font-weight: bold;',
                 'color: inherit;',
-                meta || ''
+                stringifiedMeta
             );
         } else {
-            console.info(`[${timestamp}] [INFO]`, message, meta || '');
+            console.info(`[${timestamp}] [INFO]`, message, stringifiedMeta);
         }
     },
-    warn(message: string, meta?: object): void { // was 'warm', console.info
+    warn(message: string, meta?: object): void {
         const timestamp = new Date().toISOString();
+        const stringifiedMeta = meta ? JSON.stringify(meta) : '';
         if (isNode) {
             console.warn(
                 colorizeNode(`[${timestamp}]`, TTY_COLORS.FG.GRAY),
                 colorizeNode('[WARN]', TTY_COLORS.BRIGHT + TTY_COLORS.FG.YELLOW),
                 message,
-                meta || ''
+                stringifiedMeta
             );
         } else if (isBrowser) {
             console.warn(
                 `%c[${timestamp}] %c[WARN]%c ${message}`,
                 'color: gray;',
-                'color: orange; font-weight: bold;', // Using orange for browser warn
+                'color: orange; font-weight: bold;',
                 'color: inherit;',
-                meta || ''
+                stringifiedMeta
             );
         } else {
-            console.warn(`[${timestamp}] [WARN]`, message, meta || '');
+            console.warn(`[${timestamp}] [WARN]`, message, stringifiedMeta);
         }
     },
     setLastId(lastIdToSet: string): void {
@@ -222,10 +215,8 @@ const basicLogger: Logger & { setLastId: (lastId: string) => void } = {
     }
 };
 
-// Global logger instance, initially set to basicLogger.
 let globalLogger: Logger = basicLogger;
 
-// Function to allow consumers to set their own logger.
 export const setLogger = (newLogger: Logger) => {
     globalLogger = newLogger;
 };
@@ -238,19 +229,16 @@ export const createLoggerForFile = (sourceFileUrl?: string) => {
     let componentName = 'unknown-source';
     if (isNode) {
         let callerFileName = '';
-        if (sourceFileUrl) { // Prefer explicitly passed URL
+        if (sourceFileUrl) {
             try {
                 callerFileName = new URL(sourceFileUrl).pathname;
             } catch (e) {
-                // if not a valid URL, might be a path already
                 callerFileName = sourceFileUrl;
             }
         } else {
-            // Node.js specific stack trace handling (attempt to auto-detect)
-            // This is fragile and might not work perfectly in all scenarios (e.g., transpiled code, bundled code)
-        const err = new Error();
-        const stack = err.stack || '';
-        const stackLines = stack.split('\n');
+            const err = new Error();
+            const stack = err.stack || '';
+            const stackLines = stack.split('\n');
 
             // Look for the first line in the stack that is NOT this logging file.
             // Regex to capture file path:
@@ -259,29 +247,28 @@ export const createLoggerForFile = (sourceFileUrl?: string) => {
             // - :\d+:\d+ -> Line and column number
             const fileMatchRegex = /(?:at\s+(?:.*?)\s+\()?(?:(?:file|https?):[/]{2,3}[^/]+)?([\w\-. /\\:]+?\.(?:js|ts|mjs|cjs)):\d+:\d+\)?/i;
 
-            for (let i = 1; i < stackLines.length; i++) { // Start from 1 to skip Error line
+            for (let i = 1; i < stackLines.length; i++) {
                 const line = stackLines[i];
-                if (!__filename_logging || (line.indexOf(__filename_logging) === -1 && line.indexOf('logging.ts') === -1) ) { // Ensure it's not this file
+                if (!__filename_logging || (line.indexOf(__filename_logging) === -1 && line.indexOf('logging.ts') === -1)) {
                     const matches = fileMatchRegex.exec(line);
-                if (matches && matches[1]) {
-                    callerFileName = matches[1];
-                    break;
+                    if (matches && matches[1]) {
+                        callerFileName = matches[1];
+                        break;
+                    }
                 }
             }
-        }
         }
         componentName = callerFileName ? pathUtils.basename(callerFileName, pathUtils.extname(callerFileName)) : 'node-logger';
 
     } else {
-        // Browser environment - could try to get component from URL or a predefined global
         componentName = 'browser-logger';
         if (typeof window !== 'undefined' && window.location && window.location.pathname) {
             const pathParts = window.location.pathname.split('/').filter(p => p);
             if (pathParts.length > 0) {
-                componentName = pathParts[pathParts.length -1] || componentName;
+                componentName = pathParts[pathParts.length - 1] || componentName;
             }
+        }
     }
-}
     return new Logging(componentName);
 }
 
@@ -289,22 +276,21 @@ export const createLoggerForFile = (sourceFileUrl?: string) => {
 export class Logging {
     component: string;
     appVersion: string;
-    private baseMeta: object; // Explicitly object
+    private baseMeta: object;
 
-    constructor(component: string, baseMeta: object = {}, private loggerInstance?: CTLogger) { // Allow CTLogger for setLastId
+    constructor(component: string, baseMeta: object = {}, private loggerInstance?: CTLogger) {
         this.component = component;
         this.appVersion = isNode
             ? (process.env.APP_VERSION || 'dev')
-            : ( (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') ? 'react-native-app' : 'browser-app');
+            : ((typeof navigator !== 'undefined' && navigator.product === 'ReactNative') ? 'react-native-app' : 'browser-app');
         this.baseMeta = baseMeta;
     }
 
-    private getEffectiveLogger(): CTLogger { // Ensure it returns a CTLogger for setLastId
-      return (this.loggerInstance ?? getGlobalLogger()) as CTLogger;
+    private getEffectiveLogger(): CTLogger {
+        return (this.loggerInstance ?? getGlobalLogger()) as CTLogger;
     }
 
     public getAsLogger = (): Logger => {
-        // This facade ensures that the 'this' context is correct for the Logging instance's methods
         return {
             debug: this.debug.bind(this),
             info: this.info.bind(this),
@@ -313,29 +299,27 @@ export class Logging {
             log: this.doLog.bind(this),
             getLastId: this.getEffectiveLogger().getLastId.bind(this.getEffectiveLogger()),
             setLastId: this.getEffectiveLogger()?.setLastId,
-        } as Logger; // Cast because setLastId is not on Logger interface
+        } as Logger;
     }
 
-    // This method is the one that forms the full LogEntry and passes it to the underlying logger's .log()
     private doLog = (logOpts: Omit<LogEntry, 'timestamp' | 'meta'> & { meta?: object, error?: any }): CTLogger => {
         const logId = uuid.v4().substring(0, 5);
-        // Ensure meta passed in logOpts is merged correctly
         const combinedMeta = this.genMeta(logOpts.meta || {});
 
         const entry: LogEntry = {
             level: logOpts.level,
             message: logOpts.message,
-            timestamp: new Date().toISOString(), // Add timestamp here
-            meta: {...combinedMeta, logId}, // Add logId to the meta from genMeta
+            timestamp: new Date().toISOString(),
+            meta: {...combinedMeta, logId},
         };
         if (logOpts.error) {
-            entry.error = logOpts.error; // Keep error at top level of LogEntry if present
+            entry.error = logOpts.error;
         }
 
         const logger = this.getEffectiveLogger();
-        logger.log(entry); // Call the .log method of the underlying logger
+        logger.log(entry);
 
-        if (logger.setLastId) { // Check if setLastId exists before calling
+        if (logger.setLastId) {
             logger.setLastId(logId);
         }
 
@@ -343,9 +327,6 @@ export class Logging {
     }
 
     public info = (message: string, meta: object = {}) => {
-        // Directly call the specific method on the logger, which then handles its own formatting (like colors)
-        // Or, more consistently, call doLog for unified metadata generation and logId.
-        // Let's use doLog for consistency.
         this.doLog({
             level: 'info',
             message,
@@ -354,10 +335,10 @@ export class Logging {
     }
 
     public debug = (message: string, meta: object = {}, isEnabled: boolean = false) => {
-        if (isEnabled) { // Only log if explicitly enabled
+        if (isEnabled) {
             this.doLog({
-            level: 'debug',
-            message,
+                level: 'debug',
+                message,
                 meta,
             });
         }
@@ -365,24 +346,20 @@ export class Logging {
 
 
     public error = (message: string, error: any, meta: object = {}): CTLogger => {
-        // `error` object here is the actual Error instance or error-like object
-        // `meta.error` will be the structured representation
         const errorMessage = hasOwnProperty(error, 'message') && typeof error.message === 'string'
             ? ` [${error.message}]`
             : (typeof error === 'string' ? ` [${error}]` : '');
 
-        return this.doLog({ // `doLog` returns the logger, so this is fine
+        return this.doLog({
             level: 'error',
             message: message + errorMessage,
-            error: error, // Pass the raw error object to doLog
-            meta: { // This meta is additional to what genMeta provides
-                // Structured error details for the 'meta' field
+            error: error,
+            meta: {
                 errorDetails: {
                     name: error?.name,
                     message: error?.message,
                     code: error?.code,
                     stack: error?.stack,
-                    // any other custom properties from error you want to log
                 },
                 ...meta
             }
@@ -397,13 +374,12 @@ export class Logging {
         });
     }
 
-    private genMeta = (obj: object) => ({ // This is for the 'meta' property of the LogEntry
+    private genMeta = (obj: object) => ({
         serverId,
         component: this.component,
         appVersion: this.appVersion,
-        // timestamp will be added by doLog or the final logger
         ...this.baseMeta,
-        ...obj, // Merges call-specific meta
+        ...obj,
     })
 
 }
