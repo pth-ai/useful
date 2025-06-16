@@ -88,6 +88,7 @@ interface LogEntry {
     level: 'info' | 'debug' | 'error' | 'warn' | string;
     message: string;
     timestamp: string;
+
     [optionName: string]: any;
 }
 
@@ -103,9 +104,15 @@ export interface Logger {
     setLastId: (lastId: string) => void;
 }
 
+let enableGlobalDebug = false;
+
+export function setEnableGlobalDebug(isEnabled: boolean) {
+    enableGlobalDebug = isEnabled;
+}
+
 let lastId = "";
 
-const basicLogger: Logger & { setLastId: (lastId: string) => void } = {
+const basicLogger: Logger = {
     log(entry: LogEntry): void {
         const meta = entry.meta || {};
         switcher<typeof entry.level>()
@@ -215,6 +222,21 @@ const basicLogger: Logger & { setLastId: (lastId: string) => void } = {
     }
 };
 
+export interface Transport extends Logger {
+
+}
+
+
+let transports: Transport[] = [basicLogger];
+
+export function addTransport(t: Transport) {
+    transports.push(t);
+}
+
+export function clearTransports() {
+    transports = [];
+}
+
 let globalLogger: Logger = basicLogger;
 
 export const setLogger = (newLogger: Logger) => {
@@ -316,14 +338,14 @@ export class Logging {
             entry.error = logOpts.error;
         }
 
-        const logger = this.getEffectiveLogger();
-        logger.log(entry);
 
-        if (logger.setLastId) {
-            logger.setLastId(logId);
+        for (const t of transports) {
+            t.log(entry);
+            t.setLastId(logId)
         }
 
-        return logger;
+        return transports[0];
+
     }
 
     public info = (message: string, meta: object = {}) => {
@@ -335,7 +357,7 @@ export class Logging {
     }
 
     public debug = (message: string, meta: object = {}, isEnabled: boolean = false) => {
-        if (isEnabled) {
+        if (enableGlobalDebug || isEnabled) {
             this.doLog({
                 level: 'debug',
                 message,
