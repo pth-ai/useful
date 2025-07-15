@@ -135,8 +135,24 @@ export const isServer = typeof window === 'undefined';
 export type Creator<T, Extra extends keyof Omit<T, 'id' | 'createdAt' | 'updatedAt'> | never = never> = Omit<T, 'id' | 'createdAt' | 'updatedAt' | Extra>;
 export type Updater<T, Extra extends keyof Omit<T, 'id' | 'createdAt' | 'updatedAt'> | never = never> = Omit<T, 'id' | Extra>;
 
-export const listToMap = <Key extends keyof T, T extends object>(list: T[], key: Key): Map<string, T> => {
-    return list.reduce((out, t) => out.set(String(t[key]), t), new Map());
+export function listToMap<T extends object, K extends keyof T>(
+    list: T[],
+    key: K
+): Map<string, T>;
+export function listToMap<T extends object>(
+    list: T[],
+    keyFn: (item: T) => string
+): Map<string, T>;
+export function listToMap<T extends object, K extends keyof T>(
+    list: T[],
+    keyOrFn: K | ((item: T) => string)
+): Map<string, T> {
+    return list.reduce((out, item) => {
+        const key =
+            typeof keyOrFn === 'function' ? keyOrFn(item) : String(item[keyOrFn]);
+        out.set(key, item);
+        return out;
+    }, new Map<string, T>());
 }
 
 export const groupBy = <Key extends keyof T & string, T extends object & { readonly [key in Key]: string | string[] }>(list: T[], key: Key): Map<string, T[]> =>
@@ -276,6 +292,7 @@ export function omit<T extends Record<string, any>, K extends keyof T>(
     obj: T,
     key: K
 ): Omit<T, K> {
-    const { [key]: _, ...rest } = obj;
+    const {[key]: _, ...rest} = obj;
     return rest;
 }
+
