@@ -138,21 +138,21 @@ export type Updater<T, Extra extends keyof Omit<T, 'id' | 'createdAt' | 'updated
 export function listToMap<T extends object, K extends keyof T>(
     list: T[],
     key: K
-): Map<string, T>;
-export function listToMap<T extends object>(
+): Map<T[K], T>;
+export function listToMap<T extends object, K>(
     list: T[],
-    keyFn: (item: T) => string
-): Map<string, T>;
-export function listToMap<T extends object, K extends keyof T>(
+    keyFn: (item: T) => K
+): Map<K, T>;
+export function listToMap<T extends object, K>(
     list: T[],
-    keyOrFn: K | ((item: T) => string)
-): Map<string, T> {
+    keyOrFn: keyof T | ((item: T) => K)
+): Map<any, T> {
     return list.reduce((out, item) => {
         const key =
-            typeof keyOrFn === 'function' ? keyOrFn(item) : String(item[keyOrFn]);
+            typeof keyOrFn === 'function' ? keyOrFn(item) : item[keyOrFn];
         out.set(key, item);
         return out;
-    }, new Map<string, T>());
+    }, new Map<any, T>());
 }
 
 export const groupBy = <Key extends keyof T & string, T extends object & { readonly [key in Key]: string | string[] }>(list: T[], key: Key): Map<string, T[]> =>
