@@ -112,6 +112,7 @@ export function setEnableGlobalDebug(isEnabled: boolean) {
 
 let lastId = "";
 
+
 const basicLogger: Logger = {
     log(entry: LogEntry): void {
         const meta = entry.meta || {};
@@ -338,10 +339,20 @@ export class Logging {
             entry.error = logOpts.error;
         }
 
+        try {
 
-        for (const t of transports) {
-            t.log(entry);
-            t.setLastId(logId)
+            for (const t of transports) {
+                t.log(entry);
+                t.setLastId(logId)
+            }
+
+
+        } catch (e: any) {
+            if ((e.message ?? "").includes("write after end")) {
+                // ignore
+            } else {
+                throw new Error("error in logger", {cause: e})
+            }
         }
 
         return transports[0];
