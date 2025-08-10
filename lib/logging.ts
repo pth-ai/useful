@@ -409,6 +409,7 @@ export class Logging {
 
     private genMeta = (obj: object) => ({
         serverId,
+        pid: process.pid,
         component: this.component,
         appVersion: this.appVersion,
         ...this.baseMeta,
