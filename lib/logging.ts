@@ -418,6 +418,10 @@ export class Logging {
         });
     }
 
+    public with(extra: Record<string, unknown>) {
+        return new Logging(this.component, {...this.baseMeta, ...extra}, this.getEffectiveLogger());
+    }
+
     private genMeta = (obj: object) => prune({
         ...(globalMetaProvider ? globalMetaProvider() : {}),
         serverId,
