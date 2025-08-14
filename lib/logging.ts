@@ -296,6 +296,17 @@ export const createLoggerForFile = (sourceFileUrl?: string) => {
 }
 
 
+export type MetaProvider = () => Record<string, unknown>;
+let globalMetaProvider: MetaProvider | undefined;
+
+export function setLoggingMetaProvider(provider?: MetaProvider) {
+    globalMetaProvider = provider;
+}
+
+function prune<T extends Record<string, unknown>>(obj: T): T {
+    return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as T;
+}
+
 export class Logging {
     component: string;
     appVersion: string;
@@ -407,7 +418,8 @@ export class Logging {
         });
     }
 
-    private genMeta = (obj: object) => ({
+    private genMeta = (obj: object) => prune({
+        ...(globalMetaProvider ? globalMetaProvider() : {}),
         serverId,
         pid: process.pid,
         component: this.component,
