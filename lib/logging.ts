@@ -223,7 +223,13 @@ const basicLogger: Logger = {
     }
 };
 
-export interface Transport extends Logger {
+type MaybeFlushableTransport = {
+    flush?: () => Promise<void>;
+    close?: () => void;
+    name?: string;
+};
+
+export interface Transport extends Logger, MaybeFlushableTransport {
 
 }
 
