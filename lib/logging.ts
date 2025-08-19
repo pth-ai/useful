@@ -238,6 +238,10 @@ export function clearTransports() {
     transports = [];
 }
 
+export function getTransports(): Readonly<Transport[]> {
+    return transports;
+}
+
 let globalLogger: Logger = basicLogger;
 
 export const setLogger = (newLogger: Logger) => {
